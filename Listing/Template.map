@@ -352,6 +352,7 @@ Section Cross References
     bsp_innerflash.o(i.Flash_Write8BitDatas) refers to stm32f4xx_flash.o(i.FLASH_Lock) for FLASH_Lock
     spd_comm.o(i.PIDMod_initialize) refers to modbus_svr.o(.bss) for wReg
     spd_comm.o(i.PIDMod_step) refers to modbus_svr.o(.bss) for wReg
+    spd_comm.o(i.Thruster_step) refers to modbus_svr.o(.bss) for wReg
     usart_spd3.o(i.SPD3_Config) refers to stm32f4xx_rcc.o(i.RCC_AHB1PeriphClockCmd) for RCC_AHB1PeriphClockCmd
     usart_spd3.o(i.SPD3_Config) refers to stm32f4xx_rcc.o(i.RCC_APB1PeriphClockCmd) for RCC_APB1PeriphClockCmd
     usart_spd3.o(i.SPD3_Config) refers to stm32f4xx_gpio.o(i.GPIO_Init) for GPIO_Init
@@ -1747,6 +1748,7 @@ Removing Unused input sections from the image.
     Removing spd_comm.o(.rev16_text), (4 bytes).
     Removing spd_comm.o(.revsh_text), (4 bytes).
     Removing spd_comm.o(.rrx_text), (6 bytes).
+    Removing spd_comm.o(i.Thruster_step), (348 bytes).
     Removing usart_spd3.o(.rev16_text), (4 bytes).
     Removing usart_spd3.o(.revsh_text), (4 bytes).
     Removing usart_spd3.o(.rrx_text), (6 bytes).
@@ -1787,7 +1789,7 @@ Removing Unused input sections from the image.
     Removing cdcmple.o(.text), (48 bytes).
     Removing cdrcmple.o(.text), (48 bytes).
 
-879 unused section(s) (total 33563 bytes) removed from the image.
+880 unused section(s) (total 33911 bytes) removed from the image.
 
 ==============================================================================
 
@@ -2503,47 +2505,47 @@ Memory Map of the image
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x08000000   0x08000000   0x000001ac   Data   RO            3    RESET               startup_stm32f429_439xx.o
-    0x080001ac   0x080001ac   0x00000000   Code   RO         6029  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
-    0x080001ac   0x080001ac   0x00000004   Code   RO         6365    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
-    0x080001b0   0x080001b0   0x00000004   Code   RO         6368    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
-    0x080001b4   0x080001b4   0x00000000   Code   RO         6370    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
-    0x080001b4   0x080001b4   0x00000000   Code   RO         6372    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
-    0x080001b4   0x080001b4   0x00000008   Code   RO         6373    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
-    0x080001bc   0x080001bc   0x00000000   Code   RO         6375    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
-    0x080001bc   0x080001bc   0x00000000   Code   RO         6377    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
-    0x080001bc   0x080001bc   0x00000004   Code   RO         6366    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
+    0x080001ac   0x080001ac   0x00000000   Code   RO         6035  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
+    0x080001ac   0x080001ac   0x00000004   Code   RO         6371    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
+    0x080001b0   0x080001b0   0x00000004   Code   RO         6374    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
+    0x080001b4   0x080001b4   0x00000000   Code   RO         6376    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
+    0x080001b4   0x080001b4   0x00000000   Code   RO         6378    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
+    0x080001b4   0x080001b4   0x00000008   Code   RO         6379    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
+    0x080001bc   0x080001bc   0x00000000   Code   RO         6381    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
+    0x080001bc   0x080001bc   0x00000000   Code   RO         6383    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
+    0x080001bc   0x080001bc   0x00000004   Code   RO         6372    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
     0x080001c0   0x080001c0   0x00000024   Code   RO            4    .text               startup_stm32f429_439xx.o
-    0x080001e4   0x080001e4   0x00000038   Code   RO         6328    .text               mc_w.l(__0sscanf.o)
-    0x0800021c   0x0800021c   0x00000360   Code   RO         6330    .text               mc_w.l(scanf_fp.o)
-    0x0800057c   0x0800057c   0x000000e4   Code   RO         6336    .text               mf_w.l(dmul.o)
-    0x08000660   0x08000660   0x000000de   Code   RO         6338    .text               mf_w.l(ddiv.o)
-    0x0800073e   0x0800073e   0x00000038   Code   RO         6344    .text               mf_w.l(d2f.o)
-    0x08000776   0x08000776   0x0000002c   Code   RO         6380    .text               mc_w.l(uidiv.o)
-    0x080007a2   0x080007a2   0x0000001e   Code   RO         6384    .text               mc_w.l(llshl.o)
-    0x080007c0   0x080007c0   0x00000028   Code   RO         6397    .text               mc_w.l(scanf_char.o)
-    0x080007e8   0x080007e8   0x00000040   Code   RO         6399    .text               mc_w.l(_sgetc.o)
-    0x08000828   0x08000828   0x00000000   Code   RO         6401    .text               mc_w.l(iusefp.o)
-    0x08000828   0x08000828   0x0000006e   Code   RO         6402    .text               mf_w.l(fepilogue.o)
-    0x08000896   0x08000896   0x000000ba   Code   RO         6404    .text               mf_w.l(depilogue.o)
-    0x08000950   0x08000950   0x00000018   Code   RO         6408    .text               mf_w.l(dfltul.o)
-    0x08000968   0x08000968   0x00000024   Code   RO         6418    .text               mc_w.l(init.o)
-    0x0800098c   0x0800098c   0x00000020   Code   RO         6420    .text               mc_w.l(llushr.o)
-    0x080009ac   0x080009ac   0x0000000a   Code   RO         6422    .text               mc_w.l(isspace_c.o)
+    0x080001e4   0x080001e4   0x00000038   Code   RO         6334    .text               mc_w.l(__0sscanf.o)
+    0x0800021c   0x0800021c   0x00000360   Code   RO         6336    .text               mc_w.l(scanf_fp.o)
+    0x0800057c   0x0800057c   0x000000e4   Code   RO         6342    .text               mf_w.l(dmul.o)
+    0x08000660   0x08000660   0x000000de   Code   RO         6344    .text               mf_w.l(ddiv.o)
+    0x0800073e   0x0800073e   0x00000038   Code   RO         6350    .text               mf_w.l(d2f.o)
+    0x08000776   0x08000776   0x0000002c   Code   RO         6386    .text               mc_w.l(uidiv.o)
+    0x080007a2   0x080007a2   0x0000001e   Code   RO         6390    .text               mc_w.l(llshl.o)
+    0x080007c0   0x080007c0   0x00000028   Code   RO         6403    .text               mc_w.l(scanf_char.o)
+    0x080007e8   0x080007e8   0x00000040   Code   RO         6405    .text               mc_w.l(_sgetc.o)
+    0x08000828   0x08000828   0x00000000   Code   RO         6407    .text               mc_w.l(iusefp.o)
+    0x08000828   0x08000828   0x0000006e   Code   RO         6408    .text               mf_w.l(fepilogue.o)
+    0x08000896   0x08000896   0x000000ba   Code   RO         6410    .text               mf_w.l(depilogue.o)
+    0x08000950   0x08000950   0x00000018   Code   RO         6414    .text               mf_w.l(dfltul.o)
+    0x08000968   0x08000968   0x00000024   Code   RO         6424    .text               mc_w.l(init.o)
+    0x0800098c   0x0800098c   0x00000020   Code   RO         6426    .text               mc_w.l(llushr.o)
+    0x080009ac   0x080009ac   0x0000000a   Code   RO         6428    .text               mc_w.l(isspace_c.o)
     0x080009b6   0x080009b6   0x00000002   PAD
-    0x080009b8   0x080009b8   0x0000032c   Code   RO         6424    .text               mc_w.l(_scanf.o)
-    0x08000ce4   0x08000ce4   0x00000028   Code   RO         6426    .text               mc_w.l(ctype_c.o)
+    0x080009b8   0x080009b8   0x0000032c   Code   RO         6430    .text               mc_w.l(_scanf.o)
+    0x08000ce4   0x08000ce4   0x00000028   Code   RO         6432    .text               mc_w.l(ctype_c.o)
     0x08000d0c   0x08000d0c   0x00000002   Code   RO         5228    i.BusFault_Handler  stm32f4xx_it.o
     0x08000d0e   0x08000d0e   0x00000002   PAD
     0x08000d10   0x08000d10   0x00000028   Code   RO         5334    i.CRC16             modbus_svr.o
-    0x08000d38   0x08000d38   0x000000ac   Code   RO         5873    i.DAM_Config        usart_dam.o
-    0x08000de4   0x08000de4   0x0000004c   Code   RO         5874    i.DAM_Init          usart_dam.o
-    0x08000e30   0x08000e30   0x00000028   Code   RO         5875    i.DAM_NVIC_Configuration  usart_dam.o
-    0x08000e58   0x08000e58   0x0000005c   Code   RO         5876    i.DAM_Task          usart_dam.o
-    0x08000eb4   0x08000eb4   0x0000006c   Code   RO         5877    i.DAM_TxCmd         usart_dam.o
-    0x08000f20   0x08000f20   0x000000a8   Code   RO         5822    i.DPT_Config        usart_dpt.o
-    0x08000fc8   0x08000fc8   0x0000003c   Code   RO         5823    i.DPT_Init          usart_dpt.o
-    0x08001004   0x08001004   0x00000028   Code   RO         5824    i.DPT_NVIC_Configuration  usart_dpt.o
-    0x0800102c   0x0800102c   0x0000014c   Code   RO         5825    i.DPT_Task          usart_dpt.o
+    0x08000d38   0x08000d38   0x000000ac   Code   RO         5879    i.DAM_Config        usart_dam.o
+    0x08000de4   0x08000de4   0x0000004c   Code   RO         5880    i.DAM_Init          usart_dam.o
+    0x08000e30   0x08000e30   0x00000028   Code   RO         5881    i.DAM_NVIC_Configuration  usart_dam.o
+    0x08000e58   0x08000e58   0x0000005c   Code   RO         5882    i.DAM_Task          usart_dam.o
+    0x08000eb4   0x08000eb4   0x0000006c   Code   RO         5883    i.DAM_TxCmd         usart_dam.o
+    0x08000f20   0x08000f20   0x000000a8   Code   RO         5828    i.DPT_Config        usart_dpt.o
+    0x08000fc8   0x08000fc8   0x0000003c   Code   RO         5829    i.DPT_Init          usart_dpt.o
+    0x08001004   0x08001004   0x00000028   Code   RO         5830    i.DPT_NVIC_Configuration  usart_dpt.o
+    0x0800102c   0x0800102c   0x0000014c   Code   RO         5831    i.DPT_Task          usart_dpt.o
     0x08001178   0x08001178   0x00000002   Code   RO         5229    i.DebugMon_Handler  stm32f4xx_it.o
     0x0800117a   0x0800117a   0x00000002   PAD
     0x0800117c   0x0800117c   0x0000004c   Code   RO         5335    i.Error_response    modbus_svr.o
@@ -2593,21 +2595,21 @@ Memory Map of the image
     0x08001cac   0x08001cac   0x0000001c   Code   RO         2969    i.RCC_APB1PeriphClockCmd  stm32f4xx_rcc.o
     0x08001cc8   0x08001cc8   0x0000001c   Code   RO         2972    i.RCC_APB2PeriphClockCmd  stm32f4xx_rcc.o
     0x08001ce4   0x08001ce4   0x000000a4   Code   RO         2981    i.RCC_GetClocksFreq  stm32f4xx_rcc.o
-    0x08001d88   0x08001d88   0x000000a8   Code   RO         5708    i.SPD1_Config       usart_spd1.o
-    0x08001e30   0x08001e30   0x0000005c   Code   RO         5709    i.SPD1_Init         usart_spd1.o
-    0x08001e8c   0x08001e8c   0x00000028   Code   RO         5710    i.SPD1_NVIC_Configuration  usart_spd1.o
-    0x08001eb4   0x08001eb4   0x000000d4   Code   RO         5711    i.SPD1_Task         usart_spd1.o
-    0x08001f88   0x08001f88   0x00000078   Code   RO         5712    i.SPD1_TxCmd        usart_spd1.o
-    0x08002000   0x08002000   0x000000a8   Code   RO         5765    i.SPD2_Config       usart_spd2.o
-    0x080020a8   0x080020a8   0x0000005c   Code   RO         5766    i.SPD2_Init         usart_spd2.o
-    0x08002104   0x08002104   0x00000028   Code   RO         5767    i.SPD2_NVIC_Configuration  usart_spd2.o
-    0x0800212c   0x0800212c   0x000000d4   Code   RO         5768    i.SPD2_Task         usart_spd2.o
-    0x08002200   0x08002200   0x00000078   Code   RO         5769    i.SPD2_TxCmd        usart_spd2.o
-    0x08002278   0x08002278   0x000000a8   Code   RO         5651    i.SPD3_Config       usart_spd3.o
-    0x08002320   0x08002320   0x0000005c   Code   RO         5652    i.SPD3_Init         usart_spd3.o
-    0x0800237c   0x0800237c   0x00000028   Code   RO         5653    i.SPD3_NVIC_Configuration  usart_spd3.o
-    0x080023a4   0x080023a4   0x000000e0   Code   RO         5654    i.SPD3_Task         usart_spd3.o
-    0x08002484   0x08002484   0x0000007c   Code   RO         5655    i.SPD3_TxCmd        usart_spd3.o
+    0x08001d88   0x08001d88   0x000000a8   Code   RO         5714    i.SPD1_Config       usart_spd1.o
+    0x08001e30   0x08001e30   0x0000005c   Code   RO         5715    i.SPD1_Init         usart_spd1.o
+    0x08001e8c   0x08001e8c   0x00000028   Code   RO         5716    i.SPD1_NVIC_Configuration  usart_spd1.o
+    0x08001eb4   0x08001eb4   0x000000d4   Code   RO         5717    i.SPD1_Task         usart_spd1.o
+    0x08001f88   0x08001f88   0x00000078   Code   RO         5718    i.SPD1_TxCmd        usart_spd1.o
+    0x08002000   0x08002000   0x000000a8   Code   RO         5771    i.SPD2_Config       usart_spd2.o
+    0x080020a8   0x080020a8   0x0000005c   Code   RO         5772    i.SPD2_Init         usart_spd2.o
+    0x08002104   0x08002104   0x00000028   Code   RO         5773    i.SPD2_NVIC_Configuration  usart_spd2.o
+    0x0800212c   0x0800212c   0x000000d4   Code   RO         5774    i.SPD2_Task         usart_spd2.o
+    0x08002200   0x08002200   0x00000078   Code   RO         5775    i.SPD2_TxCmd        usart_spd2.o
+    0x08002278   0x08002278   0x000000a8   Code   RO         5657    i.SPD3_Config       usart_spd3.o
+    0x08002320   0x08002320   0x0000005c   Code   RO         5658    i.SPD3_Init         usart_spd3.o
+    0x0800237c   0x0800237c   0x00000028   Code   RO         5659    i.SPD3_NVIC_Configuration  usart_spd3.o
+    0x080023a4   0x080023a4   0x000000e0   Code   RO         5660    i.SPD3_Task         usart_spd3.o
+    0x08002484   0x08002484   0x0000007c   Code   RO         5661    i.SPD3_TxCmd        usart_spd3.o
     0x08002500   0x08002500   0x00000002   Code   RO         5234    i.SVC_Handler       stm32f4xx_it.o
     0x08002502   0x08002502   0x00000002   PAD
     0x08002504   0x08002504   0x000000d4   Code   RO           13    i.SetSysClock       system_stm32f4xx.o
@@ -2619,12 +2621,12 @@ Memory Map of the image
     0x08002668   0x08002668   0x00000040   Code   RO         5471    i.SysTick_Handler   systick.o
     0x080026a8   0x080026a8   0x00000068   Code   RO         5472    i.SysTick_Init      systick.o
     0x08002710   0x08002710   0x0000005c   Code   RO           15    i.SystemInit        system_stm32f4xx.o
-    0x0800276c   0x0800276c   0x00000050   Code   RO         5878    i.UART4_IRQHandler  usart_dam.o
-    0x080027bc   0x080027bc   0x00000050   Code   RO         5770    i.UART7_IRQHandler  usart_spd2.o
+    0x0800276c   0x0800276c   0x00000050   Code   RO         5884    i.UART4_IRQHandler  usart_dam.o
+    0x080027bc   0x080027bc   0x00000050   Code   RO         5776    i.UART7_IRQHandler  usart_spd2.o
     0x0800280c   0x0800280c   0x00000068   Code   RO         5344    i.USART1_IRQHandler  modbus_svr.o
-    0x08002874   0x08002874   0x00000050   Code   RO         5656    i.USART2_IRQHandler  usart_spd3.o
-    0x080028c4   0x080028c4   0x00000050   Code   RO         5713    i.USART3_IRQHandler  usart_spd1.o
-    0x08002914   0x08002914   0x00000090   Code   RO         5826    i.USART6_IRQHandler  usart_dpt.o
+    0x08002874   0x08002874   0x00000050   Code   RO         5662    i.USART2_IRQHandler  usart_spd3.o
+    0x080028c4   0x080028c4   0x00000050   Code   RO         5719    i.USART3_IRQHandler  usart_spd1.o
+    0x08002914   0x08002914   0x00000090   Code   RO         5832    i.USART6_IRQHandler  usart_dpt.o
     0x080029a4   0x080029a4   0x00000018   Code   RO         4907    i.USART_Cmd         stm32f4xx_usart.o
     0x080029bc   0x080029bc   0x0000000e   Code   RO         4910    i.USART_GetFlagStatus  stm32f4xx_usart.o
     0x080029ca   0x080029ca   0x00000040   Code   RO         4911    i.USART_GetITStatus  stm32f4xx_usart.o
@@ -2637,18 +2639,18 @@ Memory Map of the image
     0x08002b26   0x08002b26   0x0000002e   Code   RO         5346    i.Usart_SendBytes   modbus_svr.o
     0x08002b54   0x08002b54   0x00000026   Code   RO         5348    i.Usart_SendString  modbus_svr.o
     0x08002b7a   0x08002b7a   0x00000002   PAD
-    0x08002b7c   0x08002b7c   0x00000028   Code   RO         6086    i.__0sprintf$1      mc_w.l(printf1.o)
-    0x08002ba4   0x08002ba4   0x0000000e   Code   RO         6431    i.__scatterload_copy  mc_w.l(handlers.o)
-    0x08002bb2   0x08002bb2   0x00000002   Code   RO         6432    i.__scatterload_null  mc_w.l(handlers.o)
-    0x08002bb4   0x08002bb4   0x0000000e   Code   RO         6433    i.__scatterload_zeroinit  mc_w.l(handlers.o)
-    0x08002bc2   0x08002bc2   0x0000000e   Code   RO         6332    i._is_digit         mc_w.l(scanf_fp.o)
-    0x08002bd0   0x08002bd0   0x00000154   Code   RO         6091    i._printf_core      mc_w.l(printf1.o)
-    0x08002d24   0x08002d24   0x0000000a   Code   RO         6093    i._sputc            mc_w.l(printf1.o)
+    0x08002b7c   0x08002b7c   0x00000028   Code   RO         6092    i.__0sprintf$1      mc_w.l(printf1.o)
+    0x08002ba4   0x08002ba4   0x0000000e   Code   RO         6437    i.__scatterload_copy  mc_w.l(handlers.o)
+    0x08002bb2   0x08002bb2   0x00000002   Code   RO         6438    i.__scatterload_null  mc_w.l(handlers.o)
+    0x08002bb4   0x08002bb4   0x0000000e   Code   RO         6439    i.__scatterload_zeroinit  mc_w.l(handlers.o)
+    0x08002bc2   0x08002bc2   0x0000000e   Code   RO         6338    i._is_digit         mc_w.l(scanf_fp.o)
+    0x08002bd0   0x08002bd0   0x00000154   Code   RO         6097    i._printf_core      mc_w.l(printf1.o)
+    0x08002d24   0x08002d24   0x0000000a   Code   RO         6099    i._sputc            mc_w.l(printf1.o)
     0x08002d2e   0x08002d2e   0x00000002   PAD
     0x08002d30   0x08002d30   0x00000168   Code   RO         5161    i.main              main.o
     0x08002e98   0x08002e98   0x00000200   Data   RO         5352    .constdata          modbus_svr.o
-    0x08003098   0x08003098   0x00000040   Data   RO         6427    .constdata          mc_w.l(ctype_c.o)
-    0x080030d8   0x080030d8   0x00000020   Data   RO         6429    Region$$Table       anon$$obj.o
+    0x08003098   0x08003098   0x00000040   Data   RO         6433    .constdata          mc_w.l(ctype_c.o)
+    0x080030d8   0x080030d8   0x00000020   Data   RO         6435    Region$$Table       anon$$obj.o
 
 
     Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080030f8, Size: 0x00000fe0, Max: 0x00030000, ABSOLUTE)
@@ -2659,21 +2661,21 @@ Memory Map of the image
     0x20000014   0x0800310c   0x00000010   Data   RW         3013    .data               stm32f4xx_rcc.o
     0x20000024   0x0800311c   0x00000010   Data   RW         5353    .data               modbus_svr.o
     0x20000034   0x0800312c   0x00000008   Data   RW         5474    .data               systick.o
-    0x2000003c   0x08003134   0x00000010   Data   RW         5658    .data               usart_spd3.o
-    0x2000004c   0x08003144   0x00000010   Data   RW         5715    .data               usart_spd1.o
-    0x2000005c   0x08003154   0x00000010   Data   RW         5772    .data               usart_spd2.o
-    0x2000006c   0x08003164   0x0000001c   Data   RW         5828    .data               usart_dpt.o
-    0x20000088   0x08003180   0x00000019   Data   RW         5881    .data               usart_dam.o
+    0x2000003c   0x08003134   0x00000010   Data   RW         5664    .data               usart_spd3.o
+    0x2000004c   0x08003144   0x00000010   Data   RW         5721    .data               usart_spd1.o
+    0x2000005c   0x08003154   0x00000010   Data   RW         5778    .data               usart_spd2.o
+    0x2000006c   0x08003164   0x0000001c   Data   RW         5834    .data               usart_dpt.o
+    0x20000088   0x08003180   0x00000019   Data   RW         5887    .data               usart_dam.o
     0x200000a1   0x08003199   0x00000003   PAD
     0x200000a4        -       0x00000048   Zero   RW         5162    .bss                main.o
     0x200000ec        -       0x00000520   Zero   RW         5351    .bss                modbus_svr.o
     0x2000060c        -       0x00000032   Zero   RW         5473    .bss                systick.o
     0x2000063e   0x08003199   0x00000002   PAD
-    0x20000640        -       0x00000134   Zero   RW         5657    .bss                usart_spd3.o
-    0x20000774        -       0x00000134   Zero   RW         5714    .bss                usart_spd1.o
-    0x200008a8        -       0x00000134   Zero   RW         5771    .bss                usart_spd2.o
-    0x200009dc        -       0x00000100   Zero   RW         5827    .bss                usart_dpt.o
-    0x20000adc        -       0x00000100   Zero   RW         5879    .bss                usart_dam.o
+    0x20000640        -       0x00000134   Zero   RW         5663    .bss                usart_spd3.o
+    0x20000774        -       0x00000134   Zero   RW         5720    .bss                usart_spd1.o
+    0x200008a8        -       0x00000134   Zero   RW         5777    .bss                usart_spd2.o
+    0x200009dc        -       0x00000100   Zero   RW         5833    .bss                usart_dpt.o
+    0x20000adc        -       0x00000100   Zero   RW         5885    .bss                usart_dam.o
     0x20000bdc   0x08003199   0x00000004   PAD
     0x20000be0        -       0x00000400   Zero   RW            1    STACK               startup_stm32f429_439xx.o
 
@@ -2685,29 +2687,29 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       312         42          0          0          0       2785   bsp_innerflash.o
-       136         12          0          0          0       1567   gpio.o
-       360         24          0          0         72       2411   main.o
-       124         16          0          0          0       1867   misc.o
-      1450        126        512         16       1312      10583   modbus_svr.o
-       560         18          0          0          0       4311   spd_comm.o
-        36          8        428          0       1024        992   startup_stm32f429_439xx.o
-       330         38          0          0          0       5397   stm32f4xx_flash.o
-       160          0          0          0          0       2690   stm32f4xx_gpio.o
-        16          0          0          0          0       3892   stm32f4xx_it.o
-        68         30          0          0          0       2990   stm32f4xx_iwdg.o
-       248         34          0         16          0       5327   stm32f4xx_rcc.o
-       360          8          0          0          0       6501   stm32f4xx_usart.o
-       304         34          0         20          0     285885   system_stm32f4xx.o
-       244         40          0          8         50      30178   systick.o
-       568         60          0         25        256       4616   usart_dam.o
-       744         70          0         28        256       4359   usart_dpt.o
-       712         68          0         16        308       4721   usart_spd1.o
-       712         68          0         16        308       4716   usart_spd2.o
-       728         70          0         16        308       4725   usart_spd3.o
+       312         42          0          0          0       2701   bsp_innerflash.o
+       136         12          0          0          0       1503   gpio.o
+       360         24          0          0         72       2323   main.o
+       124         16          0          0          0       1799   misc.o
+      1450        126        512         16       1312      10275   modbus_svr.o
+       560         18          0          0          0       4163   spd_comm.o
+        36          8        428          0       1024        972   startup_stm32f429_439xx.o
+       330         38          0          0          0       5233   stm32f4xx_flash.o
+       160          0          0          0          0       2606   stm32f4xx_gpio.o
+        16          0          0          0          0       3724   stm32f4xx_it.o
+        68         30          0          0          0       2878   stm32f4xx_iwdg.o
+       248         34          0         16          0       5199   stm32f4xx_rcc.o
+       360          8          0          0          0       6329   stm32f4xx_usart.o
+       304         34          0         20          0     285701   system_stm32f4xx.o
+       244         40          0          8         50      30018   systick.o
+       568         60          0         25        256       4448   usart_dam.o
+       744         70          0         28        256       4223   usart_dpt.o
+       712         68          0         16        308       4553   usart_spd1.o
+       712         68          0         16        308       4552   usart_spd2.o
+       728         70          0         16        308       4557   usart_spd3.o
 
     ----------------------------------------------------------------------
-      8188        766        972        164       3900     390513   Object Totals
+      8188        766        972        164       3900     387757   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         16          0          0          3          6          0   (incl. Padding)
 
@@ -2765,8 +2767,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     11500        830       1036        164       3900     382537   Grand Totals
-     11500        830       1036        164       3900     382537   ELF Image Totals
+     11500        830       1036        164       3900     379781   Grand Totals
+     11500        830       1036        164       3900     379781   ELF Image Totals
      11500        830       1036        164          0          0   ROM Totals
 
 ==============================================================================

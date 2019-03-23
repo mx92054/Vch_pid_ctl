@@ -64,8 +64,8 @@ short SpdQueueAvgVal(SpeedValueQueue *svq)
 void PIDMod_initialize(PID_Module *pPid, int no)
 {
     pPid->pParaAdr = &wReg[no];
-	
-		pPid->usLastFunc = 0 ;
+
+    pPid->usLastFunc = 0;
 
     pPid->vOutL1 = 0;
     pPid->vOutL2 = 0;
@@ -105,22 +105,22 @@ void PIDMod_step(PID_Module *pPid)
     long int pid_u, pid_out;
     long int curDelta, tmp, val;
 
-		if ( pPid->pParaAdr[9] == 0 && pPid->usLastFunc != 0 )
-		{
-			wReg[pPid->pParaAdr[1]] = 0x8000; 	//单回路PID
-			if ( pPid->usLastFunc == 2 || pPid->usLastFunc == 3)
-				wReg[pPid->pParaAdr[1] + 1] = 0x8000; //正并联或反并联			
-			
-			pPid->sDeltaL1 = 0;
-			pPid->sDeltaL2 = 0;
-			
-			pPid->vOutL2 = 0;
-			pPid->vOutL1 = 0 ;
-		}
-		pPid->usLastFunc = pPid->pParaAdr[9] ;
-		
+    if (pPid->pParaAdr[9] == 0 && pPid->usLastFunc != 0)
+    {
+        wReg[pPid->pParaAdr[1]] = 0x8000; //单回路PID
+        if (pPid->usLastFunc == 2 || pPid->usLastFunc == 3)
+            wReg[pPid->pParaAdr[1] + 1] = 0x8000; //正并联或反并联
+
+        pPid->sDeltaL1 = 0;
+        pPid->sDeltaL2 = 0;
+
+        pPid->vOutL2 = 0;
+        pPid->vOutL1 = 0;
+    }
+    pPid->usLastFunc = pPid->pParaAdr[9];
+
     if (pPid->pParaAdr[9] == 0)
-      return;
+        return;
 
     curDelta = pPid->pParaAdr[3] - wReg[pPid->pParaAdr[0]]; //当前偏差值
 
@@ -158,6 +158,91 @@ void PIDMod_step(PID_Module *pPid)
         val = tmp + val * (0x7FFF - tmp) / 0x7FFF;
     if (val < -wReg[PID_ZERO_ZONE])
         val = -tmp + val * (0x8000 - tmp) / 0x8000;
+
+    //输出方式选择
+    val &= 0x0000FFFF;
+    wReg[pPid->pParaAdr[1]] = 0x8000 + val; //单回路PID
+
+    //输出方式选择
+    if (pPid->pParaAdr[9] == 2)
+        wReg[pPid->pParaAdr[1] + 1] = 0x8000 + val; //正向并联PID
+    if (pPid->pParaAdr[9] == 3)
+        wReg[pPid->pParaAdr[1] + 1] = 0x8000 - val; //反向并联PID
+
+    //保存中间结果
+    pPid->vOutL2 = pPid->vOutL1;
+    pPid->vOutL1 = pid_out;
+}
+
+/****************************************************************
+ *	@brief	推进器模块的计算
+ *	@param	pPid模块指针
+ *	@retval	None
+ ****************************************************************/
+void Thruster_step(PID_Module *pPid)
+{
+    long int pid_u, pid_out;
+    long int curDelta, tmp, val;
+    float  fin, fout;
+
+    if (pPid->pParaAdr[9] == 0 && pPid->usLastFunc != 0)
+    {
+        wReg[pPid->pParaAdr[1]] = 0x8000; //单回路PID
+        if (pPid->usLastFunc == 2 || pPid->usLastFunc == 3)
+            wReg[pPid->pParaAdr[1] + 1] = 0x8000; //正并联或反并联
+
+        pPid->sDeltaL1 = 0;
+        pPid->sDeltaL2 = 0;
+
+        pPid->vOutL2 = 0;
+        pPid->vOutL1 = 0;
+    }
+    pPid->usLastFunc = pPid->pParaAdr[9];
+
+    if (pPid->pParaAdr[9] == 0)
+        return;
+
+    curDelta = pPid->pParaAdr[3] - wReg[pPid->pParaAdr[0]]; //当前偏差值
+
+    pid_u = pPid->pParaAdr[4] * (curDelta - pPid->sDeltaL1) +
+            pPid->pParaAdr[5] * pPid->sDeltaL1 +
+            pPid->pParaAdr[6] * (curDelta - 2 * pPid->sDeltaL1 + pPid->sDeltaL2);
+    pPid->sDeltaL2 = pPid->sDeltaL1;
+    pPid->sDeltaL1 = curDelta;
+
+    pid_out = pPid->vOutL1;
+    if (pPid->pParaAdr[8] == 0) //根据作用方式确定是增量还是减量
+        pid_out -= pid_u;
+    else
+        pid_out += pid_u;
+
+    //输出值限幅，避免调节器饱和
+    //输出的最大推进力为130kgf    
+    if ( pid_out > 130000)
+        pid_out = 130000 ;
+    if ( pid_out < -130000)
+        pid_out = -130000 ;
+    
+    //输出限幅
+    tmp = pid_out*pPid->pParaAdr[7] / 100 ;
+
+    //缩放到-130 - 130范围内
+    wReg[162] = tmp/1000 ;
+    fin = (float)wReg[162] ;
+
+    //根据推进力曲线，将推力转化到输出电压
+    //Voltage(v):    4       5       6       7       8       9       10 
+    //Force(kgf):    4.5     9.8     21.7    46.3    70.8    97.2    130 
+    //根据拟合曲线计算
+    // vol = 0.02399*f^3 - 6.215*f^2 + 717.2*f + 24900.0
+    fout = fin*0.02399f - 6.215f ;
+    fout = fin*fout + 717.2f ;
+    fout = fin*fout + 24900.0f ;
+    val = (int)fout ;
+    if ( val > 32767)
+        val = 32767 ;
+    if ( val < -32767)
+        val = -32767;
 
     //输出方式选择
     val &= 0x0000FFFF;
