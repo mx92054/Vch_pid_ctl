@@ -228,7 +228,10 @@ void Thruster_step(PID_Module *pPid)
 
     //缩放到-130 - 130范围内
     wReg[162] = tmp/1000 ;
-    fin = (float)wReg[162] ;
+    if ( wReg[162] > 0)
+        fin = (float)wReg[162] ;
+    else
+        fin = -(float)wReg[162] ;    
 
     //根据推进力曲线，将推力转化到输出电压
     //Voltage(v):    4       5       6       7       8       9       10 
@@ -238,7 +241,11 @@ void Thruster_step(PID_Module *pPid)
     fout = fin*0.02399f - 6.215f ;
     fout = fin*fout + 717.2f ;
     fout = fin*fout + 24900.0f ;
-    val = (int)fout ;
+    if ( wReg[162] > 0)
+        val = (int)fout ;
+    else
+        val = -(int)fout ;        
+
     if ( val > 32767)
         val = 32767 ;
     if ( val < -32767)
