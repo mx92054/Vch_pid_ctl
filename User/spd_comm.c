@@ -183,7 +183,7 @@ void Thruster_step(PID_Module *pPid)
 {
     long int pid_u, pid_out;
     long int curDelta, tmp, val;
-    float  fin, fout;
+    float fin, fout;
 
     if (pPid->pParaAdr[9] == 0 && pPid->usLastFunc != 0)
     {
@@ -217,42 +217,41 @@ void Thruster_step(PID_Module *pPid)
         pid_out += pid_u;
 
     //输出值限幅，避免调节器饱和
-    //输出的最大推进力为130kgf    
-    if ( pid_out > 1300000)
-        pid_out = 1300000 ;
-    if ( pid_out < -1300000)
-        pid_out = -1300000 ;
-    
+    //输出的最大推进力为130kgf
+    if (pid_out > 1300000)
+        pid_out = 1300000;
+    if (pid_out < -1300000)
+        pid_out = -1300000;
+
     //输出限幅
-    tmp = pid_out*pPid->pParaAdr[7] / 100 ;
+    tmp = pid_out * pPid->pParaAdr[7] / 100;
 
     //缩放到-130 - 130范围内
-    wReg[162] = tmp/10000 ;
-		fin = (float)(wReg[162] > 0? wReg[162]:-wReg[162]) ;
- 
+    wReg[162] = tmp / 10000;
+    fin = (float)(wReg[162] > 0 ? wReg[162] : -wReg[162]);
 
     //根据推进力曲线，将推力转化到输出电压
-    //Voltage(v):2  	3  		4       5       6       7       8       9       10 
-    //Force(kgf):2.0  3.0  4.5     9.8     21.7    46.3    70.8    97.2    130 
+    //Voltage(v):2  	3  		4       5       6       7       8       9       10
+    //Force(kgf):2.0  3.0  4.5     9.8     21.7    46.3    70.8    97.2    130
     //根据拟合曲线计算
     // vol = 0.0294*f^3 - 7.057*f^2 + 609.4*f + 8100.0
-    fout = fin*0.0294 - 7.057f ;
-    fout = fin*fout + 609.4f ;
-    fout = fin*fout + 8100.0f ;
-		
-		if ( wReg[162] < 2 && wReg[162] > -2 )
-			fout = 0.0f ;
-		
-		wReg[163] = (int)fout ;
-		
-    if ( wReg[162] > 0)
-        val = (int)fout ;
-    else
-        val = -(int)fout ;        
+    fout = fin * 0.0294 - 7.057f;
+    fout = fin * fout + 609.4f;
+    fout = fin * fout + 8100.0f;
 
-    if ( val > 32767)
-        val = 32767 ;
-    if ( val < -32767)
+    if (wReg[162] < 2 && wReg[162] > -2)
+        fout = 0.0f;
+
+    wReg[163] = (int)fout;
+
+    if (wReg[162] > 0)
+        val = (int)fout;
+    else
+        val = -(int)fout;
+
+    if (val > 32767)
+        val = 32767;
+    if (val < -32767)
         val = -32767;
 
     //输出方式选择
