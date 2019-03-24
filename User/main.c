@@ -105,7 +105,7 @@ int main(void)
 			PIDMod_step(&pid2);
 			Thruster_step(&pid3);
 
-			/*bp_plant_step(&pt, (float)(wReg[170] - 0x8000));
+/*			bp_plant_step(&pt, (float)(wReg[170] - 0x8000));
 			wReg[50] = (short)(pt.out - 0x8000);
 			wReg[171] = (short)(pt.out - 0x8000);*/
 		}
