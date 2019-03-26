@@ -211,10 +211,10 @@ void Thruster_step(PID_Module *pPid)
     pPid->sDeltaL1 = curDelta;
 
     pid_out = pPid->vOutL1;
-    if (pPid->pParaAdr[8] == 0) //根据作用方式确定是增量还是减量
-        pid_out -= pid_u;
+    if (pPid->pParaAdr[8]) //根据作用方式确定是增量还是减量
+        pid_out += pid_u;  //正作用
     else
-        pid_out += pid_u;
+        pid_out -= pid_u; //反作用
 
     //输出值限幅，避免调节器饱和
     //输出的最大推进力为130kgf
@@ -255,14 +255,22 @@ void Thruster_step(PID_Module *pPid)
         val = -32767;
 
     //根据作用方式及偏差确定是否关断输出
-    //正作用，出现正偏差时输出为零
-    if ( pPid->pParaAdr[8] && curDelta > 0 )
-        val = 0;
-    //反作用，出现正偏差输出为零
-    if ( !pPid->pParaAdr[8] && curDelta < 0)
-        val = 0;
+    //正作用，出现正偏差,且发生正输出时，输出为负回正电压
+    if (pPid->pParaAdr[8] && curDelta > 0 && val > 0)
+        val = -wReg[164];
+    //正作用，出现负偏差,且发生负输出时，输出为正回正电压
+    if (pPid->pParaAdr[8] && curDelta < 0 && val < 0)
+        val = wReg[164];
+
+    //反作用，出现正偏差,且发生正输出时，输出为正回正电压
+    if (pPid->pParaAdr[8] && curDelta > 0 && val < 0)
+        val = wReg[164];
+    //反作用，出现负偏差,且发生正输出时，输出为负回正电压
+    if (pPid->pParaAdr[8] && curDelta < 0 && val > 0)
+        val = -wReg[164];
+
     //在小偏差范围内，关断输出
-    if ( curDelta < wReg[163] && curDelta > -wReg[163])
+    if (curDelta < wReg[163] && curDelta > -wReg[163])
         val = 0;
 
     //输出方式选择
