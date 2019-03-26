@@ -202,7 +202,7 @@ void Thruster_step(PID_Module *pPid)
     if (pPid->pParaAdr[9] == 0)
         return;
 
-    curDelta = pPid->pParaAdr[3] - wReg[pPid->pParaAdr[0]]; //当前偏差值
+    curDelta = pPid->pParaAdr[3] - wReg[pPid->pParaAdr[0]]; //当前偏差值 设定值-实际值
 
     pid_u = pPid->pParaAdr[4] * (curDelta - pPid->sDeltaL1) +
             pPid->pParaAdr[5] * pPid->sDeltaL1 +
@@ -235,7 +235,7 @@ void Thruster_step(PID_Module *pPid)
     //Force(kgf):2.0  3.0  4.5     9.8     21.7    46.3    70.8    97.2    130
     //根据拟合曲线计算
     // vol = 0.0294*f^3 - 7.057*f^2 + 609.4*f + 8100.0
-    fout = fin * 0.0294 - 7.057f;
+    fout = fin * 0.0294f - 7.057f;
     fout = fin * fout + 609.4f;
     fout = fin * fout + 8100.0f;
 
@@ -255,23 +255,30 @@ void Thruster_step(PID_Module *pPid)
         val = -32767;
 
     //根据作用方式及偏差确定是否关断输出
-    //正作用，出现正偏差,且发生正输出时，输出为负回正电压
-    if (pPid->pParaAdr[8] && curDelta > 0 && val > 0)
-        val = -wReg[164];
-    //正作用，出现负偏差,且发生负输出时，输出为正回正电压
-    if (pPid->pParaAdr[8] && curDelta < 0 && val < 0)
-        val = wReg[164];
-
-    //反作用，出现正偏差,且发生正输出时，输出为正回正电压
-    if (pPid->pParaAdr[8] && curDelta > 0 && val < 0)
-        val = wReg[164];
-    //反作用，出现负偏差,且发生正输出时，输出为负回正电压
-    if (pPid->pParaAdr[8] && curDelta < 0 && val > 0)
-        val = -wReg[164];
+    if (pPid->pParaAdr[8])      //正作用
+    {
+        //正作用，出现正偏差,且发生负输出时，输出为正回正电压
+        if (curDelta > 0 && val < 0)
+            val = wReg[164];
+        //正作用，出现负偏差,且发生正输出时，输出为负回正电压
+        if (curDelta < 0 && val > 0)
+            val = -wReg[164];
+    }
+    else    //反作用
+    {
+        //出现正偏差,且发生正输出时，输出为负回正电压
+        if (curDelta > 0 && val > 0)
+            val = -wReg[164];
+        //出现负偏差,且发生负输出时，输出为正回正电压
+        if (curDelta < 0 && val < 0)
+            val = wReg[164];
+    }
 
     //在小偏差范围内，关断输出
     if (curDelta < wReg[163] && curDelta > -wReg[163])
         val = 0;
+
+    wReg[165] = val;
 
     //输出方式选择
     val &= 0x0000FFFF;

@@ -59,6 +59,37 @@ int main(void)
 	wReg[122] = 0x7FFF;
 	wReg[123] = 0x7FFF;
 
+	wReg[124] = 2;
+	wReg[125] = 153;
+
+	wReg[130] = 27;
+	wReg[131] = 121;
+	wReg[132] = 6604;
+	wReg[134] = 800;
+	wReg[135] = 500;
+	wReg[136] = 5;
+	wReg[137] = 100;
+	wReg[138] = 0;
+	
+	wReg[140] = 17;
+	wReg[141] = 122;
+	wReg[142] = 6604;
+	wReg[144] = 800;
+	wReg[145] = 500;
+	wReg[146] = 5;
+	wReg[147] = 100;
+	wReg[148] = 1;
+	
+	wReg[150] = 126;
+	wReg[151] = 121;
+	wReg[154] = 500;
+	wReg[155] = 10;
+	wReg[156] = 5000;
+	wReg[157] = 70;
+	wReg[158] = 1;
+
+	wReg[163] = 20;
+	wReg[164] = 318000;
 
 	SetTimer(0, 500);
 	SetTimer(1, 1000);
