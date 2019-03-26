@@ -218,7 +218,7 @@ void setRule(Fuzzy_ctl_block *pfuzzy)
  * Param: Fuzzy_ctl_block
  * Retval:  输出值
  * *******************************************************/
-short  fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
+short fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
 {
     float u_e[RULE_NUM];  //误差隶属度
     float u_de[RULE_NUM]; //误差变化率隶属度
@@ -233,33 +233,37 @@ short  fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
     short start;  //三角函数起点
     short intval; //三角函数间隔
 
-    pfuzzy->e = delta ;
+    pfuzzy->e = delta;
     //e模糊化，计算误差隶属度
-    start = -1806;
-    intval = 258; // =1806/7 ;
+    start = -1800;
+    intval = 450; // =1800/4 ;
     j = 0;
     for (i = 0; i < RULE_NUM; i++)
     {
         u_e[i] = trimf(pfuzzy->e, start, start + intval, start + 2 * intval);
         if (u_de[i] != 0)
             u_e_index[j++] = i;
-        start += 2 * intval;
+        start += intval;
     }
     for (; j < 3; j++)
         u_e_index[j] = 0;
 
-    pfuzzy->de = delta - pfuzzy->e_pre ;
-    pfuzzy->e_pre = delta ;
+    pfuzzy->de = delta - pfuzzy->e_pre;
+    pfuzzy->e_pre = delta;
+    if (pfuzzy->de < -60)
+        pfuzzy->de = -60;
+    if (pfuzzy->de > 60)
+        pfuzzy->de = 60;
     //de模糊化，计算误差变化率隶属度
-    start = -105;
-    intval = 15;
+    start = -60;
+    intval = 15; //=60/4
     j = 0;
     for (i = 0; i < RULE_NUM; i++)
     {
         u_de[i] = trimf(pfuzzy->de, start, start + intval, start + 2 * intval);
         if (u_de[i] != 0)
             u_de_index[j++] = i;
-        start += 2 * intval;
+        start += intval;
     }
     for (; j < 3; j++)
         u_de_index[j] = 0;
@@ -275,7 +279,7 @@ short  fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
 
     u_u = (num / den) * 130.0f / 3.0f;
     val = (int)u_u;
- 
+
     //根据推进力曲线，将推力转化到输出电压
     //Voltage(v):2  	3  		4       5       6       7       8       9       10
     //Force(kgf):2.0  3.0  4.5     9.8     21.7    46.3    70.8    97.2    130
@@ -286,7 +290,7 @@ short  fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
     fout = u_u * fout + 609.4f;
     fout = u_u * fout + 8100.0f;
 
-    if (u_u < 2 )
+    if (u_u < 2)
         fout = 0.0f;
 
     if (val > 0)
@@ -298,9 +302,9 @@ short  fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
         val = 32767;
     if (val < -32767)
         val = -32767;
-    
-    pfuzzy->digit_out = val & 0x0000FFFF ;
-    pfuzzy->digit_out += 0x8000 ;  
 
-    return pfuzzy->digit_out ; 
+    pfuzzy->digit_out = val & 0x0000FFFF;
+    pfuzzy->digit_out += 0x8000;
+
+    return pfuzzy->digit_out;
 }
