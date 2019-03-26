@@ -89,7 +89,7 @@ int main(void)
 	wReg[158] = 1;
 
 	wReg[163] = 20;
-	wReg[164] = 318000;
+	wReg[164] = 18000;
 
 	SetTimer(0, 500);
 	SetTimer(1, 1000);
