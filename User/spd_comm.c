@@ -227,8 +227,8 @@ void Thruster_step(PID_Module *pPid)
     tmp = pid_out * pPid->pParaAdr[7] / 100;
 
     //缩放到-130 - 130范围内
-    wReg[162] = tmp / 10000;
-    fin = (float)(wReg[162] > 0 ? wReg[162] : -wReg[162]);
+    wReg[161] = tmp / 10000;
+    fin = (float)(wReg[161] > 0 ? wReg[161] : -wReg[161]);
 
     //根据推进力曲线，将推力转化到输出电压
     //Voltage(v):2  	3  		4       5       6       7       8       9       10
@@ -239,12 +239,12 @@ void Thruster_step(PID_Module *pPid)
     fout = fin * fout + 609.4f;
     fout = fin * fout + 8100.0f;
 
-    if (wReg[162] < 2 && wReg[162] > -2)
+    if (wReg[161] < 2 && wReg[161] > -2)
         fout = 0.0f;
 
-    wReg[163] = (int)fout;
+    wReg[162] = (int)fout;
 
-    if (wReg[162] > 0)
+    if (wReg[161] > 0)
         val = (int)fout;
     else
         val = -(int)fout;
@@ -253,6 +253,17 @@ void Thruster_step(PID_Module *pPid)
         val = 32767;
     if (val < -32767)
         val = -32767;
+
+    //根据作用方式及偏差确定是否关断输出
+    //正作用，出现正偏差时输出为零
+    if ( pPid->pParaAdr[8] && curDelta > 0 )
+        val = 0;
+    //反作用，出现正偏差输出为零
+    if ( !pPid->pParaAdr[8] && curDelta < 0)
+        val = 0;
+    //在小偏差范围内，关断输出
+    if ( curDelta < wReg[163] && curDelta > -wReg[163])
+        val = 0;
 
     //输出方式选择
     val &= 0x0000FFFF;
