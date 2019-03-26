@@ -1,4 +1,4 @@
-Component: ARM Compiler 5.05 update 1 (build 106) Tool: armlink [4d0efa]
+Component: ARM Compiler 5.06 update 4 (build 422) Tool: armlink [4d35d2]
 
 ==============================================================================
 
@@ -521,6 +521,7 @@ Section Cross References
     bp_comm.o(i.feedforwardWithiInput) refers to dmul.o(.text) for __aeabi_dmul
     bp_comm.o(i.feedforwardWithiInput) refers to dadd.o(.text) for __aeabi_dadd
     bp_comm.o(i.feedforwardWithiInput) refers to bp_comm.o(i.sigmoid) for sigmoid
+    bp_comm.o(i.fuzzy_step) refers to bp_comm.o(i.trimf) for trimf
     bp_comm.o(i.init) refers to malloc.o(i.malloc) for malloc
     bp_comm.o(i.init) refers to bp_comm.o(i.randomWeight) for randomWeight
     bp_comm.o(i.init) refers to dmul.o(.text) for __aeabi_dmul
@@ -528,6 +529,7 @@ Section Cross References
     bp_comm.o(i.init) refers to bp_comm.o(i.sigmoid) for sigmoid
     bp_comm.o(i.randomWeight) refers to rand.o(.text) for rand
     bp_comm.o(i.randomWeight) refers to f2d.o(.text) for __aeabi_f2d
+    bp_comm.o(i.setRule) refers to bp_comm.o(.data) for .data
     bp_comm.o(i.sigmoid) refers to exp.o(i.__hardfp_exp) for __hardfp_exp
     bp_comm.o(i.sigmoid) refers to dadd.o(.text) for __aeabi_dadd
     bp_comm.o(i.sigmoid) refers to ddiv.o(.text) for __aeabi_ddiv
@@ -1769,6 +1771,7 @@ Removing Unused input sections from the image.
     Removing bp_comm.o(.rev16_text), (4 bytes).
     Removing bp_comm.o(.revsh_text), (4 bytes).
     Removing bp_comm.o(.rrx_text), (6 bytes).
+    Removing bp_comm.o(i.Fuzzy_ctl_init), (16 bytes).
     Removing bp_comm.o(i.backprop), (372 bytes).
     Removing bp_comm.o(i.bp_initilize), (68 bytes).
     Removing bp_comm.o(i.bp_plant_init), (32 bytes).
@@ -1776,10 +1779,14 @@ Removing Unused input sections from the image.
     Removing bp_comm.o(i.createNetWorks), (66 bytes).
     Removing bp_comm.o(i.feedforward), (200 bytes).
     Removing bp_comm.o(i.feedforwardWithiInput), (236 bytes).
+    Removing bp_comm.o(i.fuzzy_step), (468 bytes).
     Removing bp_comm.o(i.init), (260 bytes).
     Removing bp_comm.o(i.randomWeight), (64 bytes).
+    Removing bp_comm.o(i.setRule), (48 bytes).
     Removing bp_comm.o(i.sigmoid), (72 bytes).
+    Removing bp_comm.o(i.trimf), (64 bytes).
     Removing bp_comm.o(.constdata), (40 bytes).
+    Removing bp_comm.o(.data), (196 bytes).
     Removing dadd.o(.text), (334 bytes).
     Removing dneg.o(.text), (6 bytes).
     Removing f2d.o(.text), (38 bytes).
@@ -1789,7 +1796,7 @@ Removing Unused input sections from the image.
     Removing cdcmple.o(.text), (48 bytes).
     Removing cdrcmple.o(.text), (48 bytes).
 
-879 unused section(s) (total 33563 bytes) removed from the image.
+884 unused section(s) (total 34355 bytes) removed from the image.
 
 ==============================================================================
 
@@ -2131,9 +2138,9 @@ Image Symbol Table
     i._sputc                                 0x08002ed0   Section        0  printf1.o(i._sputc)
     _sputc                                   0x08002ed1   Thumb Code    10  printf1.o(i._sputc)
     i.main                                   0x08002edc   Section        0  main.o(i.main)
-    .constdata                               0x080030c0   Section      512  modbus_svr.o(.constdata)
-    wCRCTable                                0x080030c0   Data         512  modbus_svr.o(.constdata)
-    .constdata                               0x080032c0   Section       64  ctype_c.o(.constdata)
+    .constdata                               0x080030c8   Section      512  modbus_svr.o(.constdata)
+    wCRCTable                                0x080030c8   Data         512  modbus_svr.o(.constdata)
+    .constdata                               0x080032c8   Section       64  ctype_c.o(.constdata)
     .data                                    0x20000000   Section       20  system_stm32f4xx.o(.data)
     .data                                    0x20000014   Section       16  stm32f4xx_rcc.o(.data)
     APBAHBPrescTable                         0x20000014   Data          16  stm32f4xx_rcc.o(.data)
@@ -2426,10 +2433,10 @@ Image Symbol Table
     __scatterload_null                       0x08002d5f   Thumb Code     2  handlers.o(i.__scatterload_null)
     __scatterload_zeroinit                   0x08002d61   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
     _is_digit                                0x08002d6f   Thumb Code    14  scanf_fp.o(i._is_digit)
-    main                                     0x08002edd   Thumb Code   460  main.o(i.main)
-    __ctype_categories                       0x080032c0   Data          64  ctype_c.o(.constdata)
-    Region$$Table$$Base                      0x08003300   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08003320   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x08002edd   Thumb Code   466  main.o(i.main)
+    __ctype_categories                       0x080032c8   Data          64  ctype_c.o(.constdata)
+    Region$$Table$$Base                      0x08003308   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08003328   Number         0  anon$$obj.o(Region$$Table)
     SystemCoreClock                          0x20000000   Data           4  system_stm32f4xx.o(.data)
     AHBPrescTable                            0x20000004   Data          16  system_stm32f4xx.o(.data)
     bSaved                                   0x20000024   Data           1  modbus_svr.o(.data)
@@ -2500,42 +2507,42 @@ Memory Map of the image
 
   Image Entry point : 0x080001ad
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000033c4, Max: 0x00100000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000033cc, Max: 0x00100000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x00003320, Max: 0x00100000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x00003328, Max: 0x00100000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x08000000   0x000001ac   Data   RO            3    RESET               startup_stm32f429_439xx.o
-    0x080001ac   0x00000000   Code   RO         6035  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
-    0x080001ac   0x00000004   Code   RO         6371    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
-    0x080001b0   0x00000004   Code   RO         6374    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
-    0x080001b4   0x00000000   Code   RO         6376    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
-    0x080001b4   0x00000000   Code   RO         6378    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
-    0x080001b4   0x00000008   Code   RO         6379    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
-    0x080001bc   0x00000000   Code   RO         6381    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
-    0x080001bc   0x00000000   Code   RO         6383    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
-    0x080001bc   0x00000004   Code   RO         6372    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
+    0x080001ac   0x00000000   Code   RO         6062  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
+    0x080001ac   0x00000004   Code   RO         6398    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
+    0x080001b0   0x00000004   Code   RO         6401    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
+    0x080001b4   0x00000000   Code   RO         6403    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
+    0x080001b4   0x00000000   Code   RO         6405    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
+    0x080001b4   0x00000008   Code   RO         6406    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
+    0x080001bc   0x00000000   Code   RO         6408    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
+    0x080001bc   0x00000000   Code   RO         6410    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
+    0x080001bc   0x00000004   Code   RO         6399    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
     0x080001c0   0x00000024   Code   RO            4    .text               startup_stm32f429_439xx.o
-    0x080001e4   0x00000038   Code   RO         6334    .text               mc_w.l(__0sscanf.o)
-    0x0800021c   0x00000338   Code   RO         6336    .text               mc_w.l(scanf_fp.o)
-    0x08000554   0x000000e4   Code   RO         6342    .text               mf_w.l(dmul.o)
-    0x08000638   0x000000de   Code   RO         6344    .text               mf_w.l(ddiv.o)
-    0x08000716   0x00000038   Code   RO         6350    .text               mf_w.l(d2f.o)
-    0x0800074e   0x0000002c   Code   RO         6386    .text               mc_w.l(uidiv.o)
-    0x0800077a   0x0000001e   Code   RO         6390    .text               mc_w.l(llshl.o)
-    0x08000798   0x00000028   Code   RO         6403    .text               mc_w.l(scanf_char.o)
-    0x080007c0   0x00000040   Code   RO         6405    .text               mc_w.l(_sgetc.o)
-    0x08000800   0x00000000   Code   RO         6407    .text               mc_w.l(iusefp.o)
-    0x08000800   0x0000006e   Code   RO         6408    .text               mf_w.l(fepilogue.o)
-    0x0800086e   0x000000ba   Code   RO         6410    .text               mf_w.l(depilogue.o)
-    0x08000928   0x00000018   Code   RO         6414    .text               mf_w.l(dfltul.o)
-    0x08000940   0x00000024   Code   RO         6424    .text               mc_w.l(init.o)
-    0x08000964   0x00000020   Code   RO         6426    .text               mc_w.l(llushr.o)
-    0x08000984   0x0000000a   Code   RO         6428    .text               mc_w.l(isspace_c.o)
+    0x080001e4   0x00000038   Code   RO         6361    .text               mc_w.l(__0sscanf.o)
+    0x0800021c   0x00000338   Code   RO         6363    .text               mc_w.l(scanf_fp.o)
+    0x08000554   0x000000e4   Code   RO         6369    .text               mf_w.l(dmul.o)
+    0x08000638   0x000000de   Code   RO         6371    .text               mf_w.l(ddiv.o)
+    0x08000716   0x00000038   Code   RO         6377    .text               mf_w.l(d2f.o)
+    0x0800074e   0x0000002c   Code   RO         6413    .text               mc_w.l(uidiv.o)
+    0x0800077a   0x0000001e   Code   RO         6417    .text               mc_w.l(llshl.o)
+    0x08000798   0x00000028   Code   RO         6430    .text               mc_w.l(scanf_char.o)
+    0x080007c0   0x00000040   Code   RO         6432    .text               mc_w.l(_sgetc.o)
+    0x08000800   0x00000000   Code   RO         6434    .text               mc_w.l(iusefp.o)
+    0x08000800   0x0000006e   Code   RO         6435    .text               mf_w.l(fepilogue.o)
+    0x0800086e   0x000000ba   Code   RO         6437    .text               mf_w.l(depilogue.o)
+    0x08000928   0x00000018   Code   RO         6441    .text               mf_w.l(dfltul.o)
+    0x08000940   0x00000024   Code   RO         6451    .text               mc_w.l(init.o)
+    0x08000964   0x00000020   Code   RO         6453    .text               mc_w.l(llushr.o)
+    0x08000984   0x0000000a   Code   RO         6455    .text               mc_w.l(isspace_c.o)
     0x0800098e   0x00000002   PAD
-    0x08000990   0x0000032c   Code   RO         6430    .text               mc_w.l(_scanf.o)
-    0x08000cbc   0x00000028   Code   RO         6432    .text               mc_w.l(ctype_c.o)
+    0x08000990   0x0000032c   Code   RO         6457    .text               mc_w.l(_scanf.o)
+    0x08000cbc   0x00000028   Code   RO         6459    .text               mc_w.l(ctype_c.o)
     0x08000ce4   0x00000002   Code   RO         5228    i.BusFault_Handler  stm32f4xx_it.o
     0x08000ce6   0x00000002   PAD
     0x08000ce8   0x00000028   Code   RO         5334    i.CRC16             modbus_svr.o
@@ -2642,18 +2649,18 @@ Memory Map of the image
     0x08002cd2   0x0000002e   Code   RO         5346    i.Usart_SendBytes   modbus_svr.o
     0x08002d00   0x00000026   Code   RO         5348    i.Usart_SendString  modbus_svr.o
     0x08002d26   0x00000002   PAD
-    0x08002d28   0x00000028   Code   RO         6092    i.__0sprintf$1      mc_w.l(printf1.o)
-    0x08002d50   0x0000000e   Code   RO         6437    i.__scatterload_copy  mc_w.l(handlers.o)
-    0x08002d5e   0x00000002   Code   RO         6438    i.__scatterload_null  mc_w.l(handlers.o)
-    0x08002d60   0x0000000e   Code   RO         6439    i.__scatterload_zeroinit  mc_w.l(handlers.o)
-    0x08002d6e   0x0000000e   Code   RO         6338    i._is_digit         mc_w.l(scanf_fp.o)
-    0x08002d7c   0x00000154   Code   RO         6097    i._printf_core      mc_w.l(printf1.o)
-    0x08002ed0   0x0000000a   Code   RO         6099    i._sputc            mc_w.l(printf1.o)
+    0x08002d28   0x00000028   Code   RO         6119    i.__0sprintf$1      mc_w.l(printf1.o)
+    0x08002d50   0x0000000e   Code   RO         6464    i.__scatterload_copy  mc_w.l(handlers.o)
+    0x08002d5e   0x00000002   Code   RO         6465    i.__scatterload_null  mc_w.l(handlers.o)
+    0x08002d60   0x0000000e   Code   RO         6466    i.__scatterload_zeroinit  mc_w.l(handlers.o)
+    0x08002d6e   0x0000000e   Code   RO         6365    i._is_digit         mc_w.l(scanf_fp.o)
+    0x08002d7c   0x00000154   Code   RO         6124    i._printf_core      mc_w.l(printf1.o)
+    0x08002ed0   0x0000000a   Code   RO         6126    i._sputc            mc_w.l(printf1.o)
     0x08002eda   0x00000002   PAD
-    0x08002edc   0x000001e4   Code   RO         5161    i.main              main.o
-    0x080030c0   0x00000200   Data   RO         5352    .constdata          modbus_svr.o
-    0x080032c0   0x00000040   Data   RO         6433    .constdata          mc_w.l(ctype_c.o)
-    0x08003300   0x00000020   Data   RO         6435    Region$$Table       anon$$obj.o
+    0x08002edc   0x000001ec   Code   RO         5161    i.main              main.o
+    0x080030c8   0x00000200   Data   RO         5352    .constdata          modbus_svr.o
+    0x080032c8   0x00000040   Data   RO         6460    .constdata          mc_w.l(ctype_c.o)
+    0x08003308   0x00000020   Data   RO         6462    Region$$Table       anon$$obj.o
 
 
     Execution Region RW_IRAM1 (Base: 0x20000000, Size: 0x00000fe0, Max: 0x00030000, ABSOLUTE)
@@ -2690,29 +2697,29 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       312         42          0          0          0       2629   bsp_innerflash.o
-       136         12          0          0          0       1483   gpio.o
-       484         24          0          0         72       2391   main.o
-       124         16          0          0          0       1783   misc.o
-      1450        126        512         16       1312      10059   modbus_svr.o
-      1028         50          0          0          0       5275   spd_comm.o
-        36          8        428          0       1024        964   startup_stm32f429_439xx.o
-       330         38          0          0          0       5141   stm32f4xx_flash.o
-       160          0          0          0          0       2578   stm32f4xx_gpio.o
-        16          0          0          0          0       3668   stm32f4xx_it.o
-        68         30          0          0          0       2850   stm32f4xx_iwdg.o
-       248         34          0         16          0       5159   stm32f4xx_rcc.o
-       360          8          0          0          0       6245   stm32f4xx_usart.o
-       304         34          0         20          0     285613   system_stm32f4xx.o
-       244         40          0          8         50      29958   systick.o
-       568         60          0         25        256       4380   usart_dam.o
-       744         70          0         28        256       4155   usart_dpt.o
-       712         68          0         16        308       4485   usart_spd1.o
-       712         68          0         16        308       4480   usart_spd2.o
-       728         70          0         16        308       4489   usart_spd3.o
+       312         42          0          0          0       2689   bsp_innerflash.o
+       136         12          0          0          0       1495   gpio.o
+       492         26          0          0         72       2635   main.o
+       124         16          0          0          0       1795   misc.o
+      1450        126        512         16       1312      10223   modbus_svr.o
+      1028         50          0          0          0       5307   spd_comm.o
+        36          8        428          0       1024        968   startup_stm32f429_439xx.o
+       330         38          0          0          0       5205   stm32f4xx_flash.o
+       160          0          0          0          0       2594   stm32f4xx_gpio.o
+        16          0          0          0          0       3700   stm32f4xx_it.o
+        68         30          0          0          0       2870   stm32f4xx_iwdg.o
+       248         34          0         16          0       5183   stm32f4xx_rcc.o
+       360          8          0          0          0       6309   stm32f4xx_usart.o
+       304         34          0         20          0     285645   system_stm32f4xx.o
+       244         40          0          8         50      29986   systick.o
+       568         60          0         25        256       4424   usart_dam.o
+       744         70          0         28        256       4191   usart_dpt.o
+       712         68          0         16        308       4529   usart_spd1.o
+       712         68          0         16        308       4524   usart_spd2.o
+       728         70          0         16        308       4533   usart_spd3.o
 
     ----------------------------------------------------------------------
-      8780        798        972        164       3900     387785   Object Totals
+      8788        800        972        164       3900     388805   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         16          0          0          3          6          0   (incl. Padding)
 
@@ -2770,15 +2777,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     12052        862       1036        164       3900     379809   Grand Totals
-     12052        862       1036        164       3900     379809   ELF Image Totals
-     12052        862       1036        164          0          0   ROM Totals
+     12060        864       1036        164       3900     380829   Grand Totals
+     12060        864       1036        164       3900     380829   ELF Image Totals
+     12060        864       1036        164          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                13088 (  12.78kB)
+    Total RO  Size (Code + RO Data)                13096 (  12.79kB)
     Total RW  Size (RW Data + ZI Data)              4064 (   3.97kB)
-    Total ROM Size (Code + RO Data + RW Data)      13252 (  12.94kB)
+    Total ROM Size (Code + RO Data + RW Data)      13260 (  12.95kB)
 
 ==============================================================================
 

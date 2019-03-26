@@ -1,11 +1,11 @@
 ..\..\output\bp_comm.o: ..\..\User\BP_comm.c
-..\..\output\bp_comm.o: D:\Program\Keil\ARM\ARMCC\Bin\..\include\stdio.h
-..\..\output\bp_comm.o: D:\Program\Keil\ARM\ARMCC\Bin\..\include\stdlib.h
-..\..\output\bp_comm.o: D:\Program\Keil\ARM\ARMCC\Bin\..\include\math.h
+..\..\output\bp_comm.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\bp_comm.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\..\output\bp_comm.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 ..\..\output\bp_comm.o: ..\..\User\SysTick.h
 ..\..\output\bp_comm.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
 ..\..\output\bp_comm.o: ..\..\Libraries\CMSIS\Include\core_cm4.h
-..\..\output\bp_comm.o: D:\Program\Keil\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\bp_comm.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\..\output\bp_comm.o: ..\..\Libraries\CMSIS\Include\core_cmInstr.h
 ..\..\output\bp_comm.o: ..\..\Libraries\CMSIS\Include\core_cmFunc.h
 ..\..\output\bp_comm.o: ..\..\Libraries\CMSIS\Include\core_cmSimd.h
