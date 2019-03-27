@@ -5,6 +5,8 @@
 
 #include "BP_comm.h"
 
+extern short wReg[] ;
+
 /////////////function
 double sigmoid(double v)
 {
@@ -191,9 +193,9 @@ float trimf(short x, short a, short b, short c)
 {
     float u;
     if (x >= a && x <= b)
-        u = (x - a) / (b - a);
+        u = (float)(x - a) / (float)(b - a);
     else if (x > b && x <= c)
-        u = (c - x) / (c - b);
+        u = (float)(c - x) / (float)(c - b);
     else
         u = 0.0f;
 
@@ -241,7 +243,7 @@ short fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
     for (i = 0; i < RULE_NUM; i++)
     {
         u_e[i] = trimf(pfuzzy->e, start, start + intval, start + 2 * intval);
-        if (u_de[i] != 0)
+        if (u_e[i] > 0.001 )
             u_e_index[j++] = i;
         start += intval;
     }
@@ -261,7 +263,7 @@ short fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
     for (i = 0; i < RULE_NUM; i++)
     {
         u_de[i] = trimf(pfuzzy->de, start, start + intval, start + 2 * intval);
-        if (u_de[i] != 0)
+        if (u_de[i] > 0.001 )
             u_de_index[j++] = i;
         start += intval;
     }
@@ -273,7 +275,7 @@ short fuzzy_step(Fuzzy_ctl_block *pfuzzy, short delta)
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
         {
-            num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * pfuzzy->rule[u_e_index[i]][u_de_index[j]];
+            num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)rulelist[u_e_index[i]][u_de_index[j]];
             den += u_e[u_e_index[i]] * u_de[u_de_index[j]];
         }
 

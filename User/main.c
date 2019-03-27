@@ -32,6 +32,8 @@ PID_Module pid1;
 PID_Module pid2;
 PID_Module pid3;
 
+Fuzzy_ctl_block fblk ;
+
 Plant pt;
 
 int main(void)
@@ -103,7 +105,8 @@ int main(void)
 	PIDMod_initialize(&pid3, 150);
 
 	//bp_plant_init(&pt);
-
+	Fuzzy_ctl_init(&fblk) ;
+	
 	while (1)
 	{
 		Modbus_task(); //通信出来进程
@@ -134,7 +137,7 @@ int main(void)
 		{
 			PIDMod_step(&pid1);
 			PIDMod_step(&pid2);
-			Thruster_step(&pid3);
+			Thruster_step(&pid3);			
 
 /*			bp_plant_step(&pt, (float)(wReg[170] - 0x8000));
 			wReg[50] = (short)(pt.out - 0x8000);
