@@ -205,6 +205,8 @@ void Thruster_step(PID_Module *pPid)
     else
         force = Fuzzy_controller(pPid);
 
+    wReg[161] = force;
+
     Thruster_out(pPid, force);
 }
 
@@ -229,7 +231,7 @@ short PID_controller(PID_Module *pPid)
     pPid->sDeltaL1 = curDelta;
 
     pid_out = pPid->vOutL1;
-    pid_out += pid_u; 
+    pid_out += pid_u;
 
     //输出值限幅，避免调节器饱和
     //输出的最大推进力为130kgf
@@ -258,9 +260,6 @@ short PID_controller(PID_Module *pPid)
     //在小偏差范围内，关断输出
     if (curDelta < wReg[163] && curDelta > -wReg[163])
         pid_u = 0;
-
-    wReg[165] = pid_u ;
-    wReg[166] = tmp/10000 ;
 
     return pid_u;
 }
@@ -336,9 +335,9 @@ float Fuzzy_trimf(short x, short a, short b, short c)
  * *******************************************************/
 short Fuzzy_controller(PID_Module *pPid)
 {
-    float u_e[7];    //误差隶属度
-    float u_de[7];   //误差变化率隶属度
-    float u_u; //输出隶属度
+    float u_e[7];  //误差隶属度
+    float u_de[7]; //误差变化率隶属度
+    float u_u;     //输出隶属度
 
     float den, num;
 
@@ -352,6 +351,11 @@ short Fuzzy_controller(PID_Module *pPid)
     short intval; //三角函数间隔
 
     curDelta = pPid->pParaAdr[3] - wReg[pPid->pParaAdr[0]]; //当前偏差值 设定值-实际值
+    if (curDelta >= 1800)
+        curDelta = 1799;
+    if (curDelta <= -1800)
+        curDelta = -1799;
+
     //e模糊化，计算误差隶属度
     start = -1800;
     intval = 450; // =1800/4 ;
@@ -369,14 +373,14 @@ short Fuzzy_controller(PID_Module *pPid)
     dcurDelta = curDelta - pPid->sDeltaL1;
     pPid->sDeltaL1 = curDelta;
 
-    if (dcurDelta < -60)
-        dcurDelta = -60;
-    if (dcurDelta > 60)
-        dcurDelta = 60;
+    if (dcurDelta <= -wReg[165])
+        dcurDelta = -wReg[165] + 1;
+    if (dcurDelta >= wReg[165])
+        dcurDelta = wReg[165] - 1;
 
     //de模糊化，计算误差变化率隶属度
-    start = -60;
-    intval = 15; //=60/4
+    start = -wReg[165];
+    intval = wReg[165] / 4; 
     j = 0;
     for (i = 0; i < 7; i++)
     {
@@ -397,9 +401,7 @@ short Fuzzy_controller(PID_Module *pPid)
             den += u_e[u_e_index[i]] * u_de[u_de_index[j]];
         }
 
-    u_u = (num / den) * 130.0f / 3.0f;
-
-    wReg[164] = (short)u_u* pPid->pParaAdr[7] / 100; ;
+    u_u = (num / den) * 130.0f * pPid->pParaAdr[7] / 300.0f;
 
     return (short)u_u;
 }
@@ -412,22 +414,22 @@ short Fuzzy_controller(PID_Module *pPid)
 void Thruster_out(PID_Module *pPid, short force)
 {
     short dig_out;
-    short act_out ;
+    short act_out;
 
     dig_out = ForceToDigitout(force);
-    wReg[167] = dig_out ;
+    wReg[162] = dig_out;
 
-    if ( pPid->pParaAdr[8] )
-        act_out = dig_out ;
+    if (pPid->pParaAdr[8])
+        act_out = dig_out;
     else
-        act_out = -dig_out ;
+        act_out = -dig_out;
 
-        wReg[pPid->pParaAdr[1]] = 0x8000 + act_out; //单回路PID
+    wReg[pPid->pParaAdr[1]] = 0x8000 + act_out; //单回路PID
 
     //输出方式选择
     if (pPid->pParaAdr[9] == 2)
         wReg[pPid->pParaAdr[1] + 1] = 0x8000 + act_out; //正向并联PID
     if (pPid->pParaAdr[9] == 3)
-        wReg[pPid->pParaAdr[1] + 1] = 0x8000 - act_out;; //反向并联PID
+        wReg[pPid->pParaAdr[1] + 1] = 0x8000 - act_out; //反向并联PID
 }
 /*------------------end of file------------------------*/

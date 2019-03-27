@@ -32,8 +32,6 @@ PID_Module pid1;
 PID_Module pid2;
 PID_Module pid3;
 
-Fuzzy_ctl_block fblk ;
-
 Plant pt;
 
 int main(void)
@@ -54,7 +52,7 @@ int main(void)
 
 	wReg[139] = 0;
 	wReg[149] = 0;
-	wReg[159] = 0;	
+	wReg[159] = 0;
 	wReg[PID_ZERO_ZONE] = 0;
 	wReg[120] = 0x7FFF;
 	wReg[121] = 0x7FFF;
@@ -72,7 +70,7 @@ int main(void)
 	wReg[136] = 5;
 	wReg[137] = 100;
 	wReg[138] = 0;
-	
+
 	wReg[140] = 17;
 	wReg[141] = 122;
 	wReg[142] = 6604;
@@ -81,9 +79,10 @@ int main(void)
 	wReg[146] = 5;
 	wReg[147] = 100;
 	wReg[148] = 1;
-	
+
 	wReg[150] = 126;
 	wReg[151] = 121;
+	wReg[152] = 1;
 	wReg[154] = 500;
 	wReg[155] = 10;
 	wReg[156] = 5000;
@@ -91,7 +90,8 @@ int main(void)
 	wReg[158] = 1;
 
 	wReg[163] = 20;
-	wReg[164] = 18000;
+	wReg[164] = 20;
+	wReg[165] = 60;
 
 	SetTimer(0, 500);
 	SetTimer(1, 1000);
@@ -105,8 +105,7 @@ int main(void)
 	PIDMod_initialize(&pid3, 150);
 
 	//bp_plant_init(&pt);
-	Fuzzy_ctl_init(&fblk) ;
-	
+
 	while (1)
 	{
 		Modbus_task(); //通信出来进程
@@ -137,9 +136,9 @@ int main(void)
 		{
 			PIDMod_step(&pid1);
 			PIDMod_step(&pid2);
-			Thruster_step(&pid3);			
+			Thruster_step(&pid3);
 
-/*			bp_plant_step(&pt, (float)(wReg[170] - 0x8000));
+			/*			bp_plant_step(&pt, (float)(wReg[170] - 0x8000));
 			wReg[50] = (short)(pt.out - 0x8000);
 			wReg[171] = (short)(pt.out - 0x8000);*/
 		}
