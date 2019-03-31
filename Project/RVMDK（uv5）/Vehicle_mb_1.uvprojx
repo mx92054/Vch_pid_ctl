@@ -722,6 +722,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\BP_comm.c</FilePath>
             </File>
+            <File>
+              <FileName>plant.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\plant.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

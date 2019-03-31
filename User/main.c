@@ -21,6 +21,7 @@
 #include "usart_dam.h"
 #include "gpio.h"
 #include "bsp_innerflash.h"
+#include "plant.h"
 
 #include "spd_comm.h"
 #include "BP_comm.h"
@@ -89,6 +90,7 @@ int main(void)
 	wReg[157] = 70;
 	wReg[158] = 1;
 
+	wReg[161] = 0 ;
 	wReg[163] = 20;
 	wReg[164] = 20;
 	wReg[165] = 60;
@@ -103,6 +105,9 @@ int main(void)
 	PIDMod_initialize(&pid1, 130);
 	PIDMod_initialize(&pid2, 140);
 	PIDMod_initialize(&pid3, 150);
+
+	plant_init(&plant) ;
+	plant_water_set(&plant, 1.0f, 0) ;
 
 	//bp_plant_init(&pt);
 
@@ -138,9 +143,9 @@ int main(void)
 			PIDMod_step(&pid2);
 			Thruster_step(&pid3);
 
-			/*			bp_plant_step(&pt, (float)(wReg[170] - 0x8000));
-			wReg[50] = (short)(pt.out - 0x8000);
-			wReg[171] = (short)(pt.out - 0x8000);*/
+			plant_step(&plant, wReg[161]*10) ;
+			wReg[50] = (int)(plant.angle*1800.0/3.14f) ;
+			wReg[51] = (int)(plant.dangle*1800.0/3.14f) ;
 		}
 
 		if (GetTimer(3))

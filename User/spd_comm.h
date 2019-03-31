@@ -62,7 +62,8 @@ float Fuzzy_trimf(short x, short a, short b, short c);
 float Fuzzy_trimf(short x, short a, short b, short c); //三角函数运算
 short Fuzzy_controller(PID_Module *pPid);              //模糊控制器
 short PID_controller(PID_Module *pPid);                //PID控制器
-void  Thruster_out(PID_Module *pPid, short force) ;    //推进力输出函数
+void Thruster_out(PID_Module *pPid, short force);      //推进力输出函数
+void Fuzzy_PIDParameter_step(PID_Module *pPid);        //模糊算法调整PID参数
 
 #endif
 /*------------------end of file------------------------*/

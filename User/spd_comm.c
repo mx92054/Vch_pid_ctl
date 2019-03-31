@@ -200,10 +200,23 @@ void Thruster_step(PID_Module *pPid)
     if (pPid->pParaAdr[9] == 0)
         return;
 
-    if (pPid->pParaAdr[2])
+    if (pPid->pParaAdr[2] == 0)
         force = PID_controller(pPid);
-    else
+
+    if (pPid->pParaAdr[2] == 1)
         force = Fuzzy_controller(pPid);
+
+    if (pPid->pParaAdr[2] == 2)
+        if (pPid->sDeltaL1 < 100 && pPid->sDeltaL1 > -100)
+            force = PID_controller(pPid);
+        else
+            force = Fuzzy_controller(pPid);
+
+    if (pPid->pParaAdr[2] == 3)
+    {
+        force = PID_controller(pPid);
+        Fuzzy_PIDParameter_step(pPid);
+    }
 
     wReg[161] = force;
 
@@ -248,7 +261,7 @@ short PID_controller(PID_Module *pPid)
 
     //缩放到-130 - 130范围内
     pid_u = tmp / 10000;
-
+    /*
     //出现正偏差,且发生负输出时，输出为正回推进力
     if (curDelta > 0 && pid_u < 0)
         pid_u = wReg[164];
@@ -260,7 +273,7 @@ short PID_controller(PID_Module *pPid)
     //在小偏差范围内，关断输出
     if (curDelta < wReg[163] && curDelta > -wReg[163])
         pid_u = 0;
-
+*/
     return pid_u;
 }
 
@@ -380,7 +393,7 @@ short Fuzzy_controller(PID_Module *pPid)
 
     //de模糊化，计算误差变化率隶属度
     start = -wReg[165];
-    intval = wReg[165] / 4; 
+    intval = wReg[165] / 4;
     j = 0;
     for (i = 0; i < 7; i++)
     {
@@ -432,4 +445,124 @@ void Thruster_out(PID_Module *pPid, short force)
     if (pPid->pParaAdr[9] == 3)
         wReg[pPid->pParaAdr[1] + 1] = 0x8000 - act_out; //反向并联PID
 }
+
+//---------根据模糊规则修正PID参数----------------------------
+int P_rulelist[7][7] = {
+    {3, 3, 2, 2, 1, 0, 0},
+    {3, 3, 2, 2, 1, 0, -1},
+    {2, 2, 2, 1, 0, -1, -1},
+    {2, 2, 1, 0, -1, -2, -2},
+    {1, 1, 0, -1, -1, -2, -2},
+    {1, 0, -1, -2, -2, -2, -3},
+    {0, 0, -2, -2, -2, -3, -3}};
+int I_rulelist[7][7] = {
+    {-3, -3, -2, -2, -1, 0, 0},
+    {-3, -3, -2, -1, -1, 0, 0},
+    {-3, -2, -1, -1, 0, 1, 1},
+    {-2, -2, -1, 0, 1, 2, 2},
+    {-2, -1, 0, 1, 1, 2, 3},
+    {0, 0, 1, 1, 2, 3, 3},
+    {0, 0, 1, 2, 2, 3, 3}};
+int D_rulelist[7][7] = {
+    {1, -1, -3, -3, -3, -2, 1},
+    {1, -1, -3, -2, -2, -1, 0},
+    {0, -1, -2, -2, -1, -1, 0},
+    {0, -1, -1, -1, -1, -1, 0},
+    {0, 0, 0, 0, 0, 0, 0},
+    {1, -1, -1, 1, 1, 1, 1},
+    {1, 2, 1, 2, 1, 1, 1}};
+void Fuzzy_PIDParameter_step(PID_Module *pPid)
+{
+    float u_e[7];  //误差隶属度
+    float u_de[7]; //误差变化率隶属度
+    float u_u;     //输出隶属度
+
+    float den, num;
+
+    int u_e_index[3];  //每个输入只激活3个模糊子集
+    int u_de_index[3]; //每个输入只激活3个模糊子集
+    short curDelta;
+    short dcurDelta;
+
+    int i, j;
+    short start;  //三角函数起点
+    short intval; //三角函数间隔
+
+    curDelta = pPid->sDeltaL1; //当前偏差值 设定值-实际值
+    if (curDelta >= 1800)
+        curDelta = 1799;
+    if (curDelta <= -1800)
+        curDelta = -1799;
+
+    //e模糊化，计算误差隶属度
+    start = -1800;
+    intval = 450; // =1800/4 ;
+    j = 0;
+    for (i = 0; i < 7; i++)
+    {
+        u_e[i] = Fuzzy_trimf(curDelta, start, start + intval, start + 2 * intval);
+        if (u_e[i] > 0.001)
+            u_e_index[j++] = i;
+        start += intval;
+    }
+    for (; j < 3; j++)
+        u_e_index[j] = 0;
+
+    dcurDelta = pPid->sDeltaL1 - pPid->sDeltaL2;
+
+    if (dcurDelta <= -wReg[165])
+        dcurDelta = -wReg[165] + 1;
+    if (dcurDelta >= wReg[165])
+        dcurDelta = wReg[165] - 1;
+
+    //de模糊化，计算误差变化率隶属度
+    start = -wReg[165];
+    intval = wReg[165] / 4;
+    j = 0;
+    for (i = 0; i < 7; i++)
+    {
+        u_de[i] = Fuzzy_trimf(dcurDelta, start, start + intval, start + 2 * intval);
+        if (u_de[i] > 0.001)
+            u_de_index[j++] = i;
+        start += intval;
+    }
+    for (; j < 3; j++)
+        u_de_index[j] = 0;
+
+    den = 0.0f;
+    num = 0.0f;
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++)
+        {
+            num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)P_rulelist[u_e_index[i]][u_de_index[j]];
+            den += u_e[u_e_index[i]] * u_de[u_de_index[j]];
+        }
+    u_u = num / den;
+    pPid->pParaAdr[4] += (short)u_u * 5;
+    if ( pPid->pParaAdr[4] < 50 )
+        pPid->pParaAdr[4] = 50 ;
+
+    den = 0.0f;
+    num = 0.0f;
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++)
+        {
+            num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)I_rulelist[u_e_index[i]][u_de_index[j]];
+            den += u_e[u_e_index[i]] * u_de[u_de_index[j]];
+        }
+    u_u = num / den;
+    //pPid->pParaAdr[5] += (short)u_u;
+
+    den = 0.0f;
+    num = 0.0f;
+    for (i = 0; i < 3; i++)
+        for (j = 0; j < 3; j++)
+        {
+            num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)D_rulelist[u_e_index[i]][u_de_index[j]];
+            den += u_e[u_e_index[i]] * u_de[u_de_index[j]];
+        }
+    u_u = num / den;
+    pPid->pParaAdr[6] += (short)u_u*10;
+}
+
 /*------------------end of file------------------------*/

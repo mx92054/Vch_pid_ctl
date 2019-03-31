@@ -47,5 +47,6 @@
 ..\..\output\main.o: ..\..\User\usart_dam.h
 ..\..\output\main.o: ..\..\User\gpio.h
 ..\..\output\main.o: ..\..\User\bsp_innerflash.h
+..\..\output\main.o: ..\..\User\plant.h
 ..\..\output\main.o: ..\..\User\spd_comm.h
 ..\..\output\main.o: ..\..\User\BP_comm.h
