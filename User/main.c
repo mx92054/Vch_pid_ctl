@@ -37,6 +37,10 @@ Plant pt;
 
 int main(void)
 {
+	int nTestMode = 0; //当前测试模式
+	int nTestVol;	  //最终输出电压数值
+	int nTestCur;	  //当前输出电压值
+	short sTestSw = 0; //上次测试按钮状态
 
 	SysTick_Init();												  //tick定时器初始
 	GPIO_Config();												  //GPIO初始化
@@ -90,7 +94,7 @@ int main(void)
 	wReg[157] = 70;
 	wReg[158] = 1;
 
-	wReg[161] = 0 ;
+	wReg[161] = 0;
 	wReg[163] = 20;
 	wReg[164] = 20;
 	wReg[165] = 60;
@@ -106,8 +110,8 @@ int main(void)
 	PIDMod_initialize(&pid2, 140);
 	PIDMod_initialize(&pid3, 150);
 
-	plant_init(&plant) ;
-	plant_water_set(&plant, 1.0f, 0) ;
+	plant_init(&plant);
+	plant_water_set(&plant, 1.0f, 0);
 
 	//bp_plant_init(&pt);
 
@@ -137,27 +141,77 @@ int main(void)
 			bSaved = 0;
 		}
 
-		if (GetTimer(2))
+		if (GetTimer(2)) //100ms cycle
 		{
 			PIDMod_step(&pid1);
 			PIDMod_step(&pid2);
 			Thruster_step(&pid3);
 
-			plant_step(&plant, wReg[161]*10) ;
-			wReg[50] = (int)(plant.angle*1800.0/3.14f) ;
-			wReg[51] = (int)(plant.dangle*1800.0/3.14f) ;
+			plant_step(&plant, wReg[161] * 10);
+			wReg[50] = (int)(plant.angle * 1800.0f / 3.14f);
+			wReg[51] = (int)(plant.dangle * 1800.0f / 3.14f);
 		}
 
-		if (GetTimer(3))
+		if (GetTimer(3)) //100ms cycle
 		{
 			SPD1_TxCmd(); //向1#编码器发读取指令
 			SPD2_TxCmd(); //向2#编码器发读取指令
 			SPD3_TxCmd(); //向3#编码器发读取指令
 		}
 
-		if (GetTimer(4))
+		if (GetTimer(4)) //200ms
 		{
 			DAM_TxCmd(); //向模拟量输出板发出指令
+
+			//模拟量测试环节
+			if (wReg[129] == 1)
+			{
+				if (wReg[127] > 0 && wReg[127] < 5 && nTestMode == 0) //启动测试
+				{
+					nTestMode = 1; //上升
+					nTestVol = (wReg[128] > 0) ? (3276 * wReg[128]) : (-3276 * wReg[128]);
+					nTestCur = 0;
+				}
+
+				if (nTestMode == 1) //上升模式
+				{
+					wReg[119 + wReg[127]] = (wReg[128] > 0) ? (0x8000 + nTestCur) : (0x8000 - nTestCur);
+					nTestCur += 655; //每1s增加1V
+					if (nTestCur >= nTestVol)
+					{
+						nTestMode = 2;
+						nTestCur = 0;
+					}
+				}
+
+				if (nTestMode == 2) //固定输出保持2秒钟
+				{
+					nTestCur++;
+					if (nTestCur > 10)
+					{
+						nTestMode = 3;
+						nTestCur = nTestVol;
+					}
+				}
+
+				if (nTestMode == 3) //下降模式
+				{
+					wReg[119 + wReg[127]] = (wReg[128] > 0) ? (0x8000 + nTestCur) : (0x8000 - nTestCur);
+					nTestCur -= 655;   //每1s减少1V
+					if (nTestCur <= 0) //模式完成判断
+					{
+						nTestMode = 0;
+						wReg[129] = 0;
+					}
+				}
+			}
+
+			if (wReg[129] == 0 && sTestSw != 0) //按钮退出
+			{
+				nTestMode = 0;
+				wReg[119 + wReg[127]] = 0x8000;
+			}
+			sTestSw = wReg[129];
 		}
 	}
 }

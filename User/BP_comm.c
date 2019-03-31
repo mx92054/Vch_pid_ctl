@@ -139,12 +139,12 @@ void bp_initilize(NNET *nnet)
 
 void bp_plant_init(Plant *plt)
 {
-    plt->sys_state0 = 0.0;
-    plt->sys_state1 = 0.0;
-    plt->delay_state = 0.0;
+    plt->sys_state0 = 0.0f;
+    plt->sys_state1 = 0.0f;
+    plt->delay_state = 0.0f;
 
-    plt->in = 0.0;
-    plt->out = 0.0;
+    plt->in = 0.0f;
+    plt->out = 0.0f;
 }
 
 void bp_plant_step(Plant *plt, float u)
@@ -155,9 +155,9 @@ void bp_plant_step(Plant *plt, float u)
 
     plt->out = plt->delay_state;
 
-    plt->delay_state = 250.0 * plt->sys_state1;
+    plt->delay_state = 250.0f * plt->sys_state1;
 
-    tmp = ((plt->in - 12.0 * plt->sys_state0) - plt->sys_state1) / 115.0;
+    tmp = ((plt->in - 12.0f * plt->sys_state0) - plt->sys_state1) / 115.0f;
 
     plt->sys_state1 = plt->sys_state0;
     plt->sys_state0 = tmp;
