@@ -200,19 +200,19 @@ void Thruster_step(PID_Module *pPid)
     if (pPid->pParaAdr[9] == 0)
         return;
 
-    if (pPid->pParaAdr[2] == 0)
+    if (pPid->pParaAdr[2] == 0)  //PID控制
         force = PID_controller(pPid);
 
-    if (pPid->pParaAdr[2] == 1)
+    if (pPid->pParaAdr[2] == 1)  //模糊控制
         force = Fuzzy_controller(pPid);
 
-    if (pPid->pParaAdr[2] == 2)
+    if (pPid->pParaAdr[2] == 2) //误差小于100采用PID控制，反之采用模糊控制
         if (pPid->sDeltaL1 < 100 && pPid->sDeltaL1 > -100)
             force = PID_controller(pPid);
         else
             force = Fuzzy_controller(pPid);
 
-    if (pPid->pParaAdr[2] == 3)
+    if (pPid->pParaAdr[2] == 3) //PID控制，采用模糊规则调节PID参数
     {
         force = PID_controller(pPid);
         Fuzzy_PIDParameter_step(pPid);
@@ -376,7 +376,7 @@ short Fuzzy_controller(PID_Module *pPid)
     for (i = 0; i < 7; i++)
     {
         u_e[i] = Fuzzy_trimf(curDelta, start, start + intval, start + 2 * intval);
-        if (u_e[i] > 0.001)
+        if (u_e[i] > 0.001f)
             u_e_index[j++] = i;
         start += intval;
     }
@@ -398,7 +398,7 @@ short Fuzzy_controller(PID_Module *pPid)
     for (i = 0; i < 7; i++)
     {
         u_de[i] = Fuzzy_trimf(dcurDelta, start, start + intval, start + 2 * intval);
-        if (u_de[i] > 0.001)
+        if (u_de[i] > 0.001f)
             u_de_index[j++] = i;
         start += intval;
     }
@@ -501,7 +501,7 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
     for (i = 0; i < 7; i++)
     {
         u_e[i] = Fuzzy_trimf(curDelta, start, start + intval, start + 2 * intval);
-        if (u_e[i] > 0.001)
+        if (u_e[i] > 0.001f)
             u_e_index[j++] = i;
         start += intval;
     }
@@ -522,7 +522,7 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
     for (i = 0; i < 7; i++)
     {
         u_de[i] = Fuzzy_trimf(dcurDelta, start, start + intval, start + 2 * intval);
-        if (u_de[i] > 0.001)
+        if (u_de[i] > 0.001f)
             u_de_index[j++] = i;
         start += intval;
     }
@@ -543,23 +543,19 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
         pPid->pParaAdr[4] = 50 ;
 
     den = 0.0f;
-    num = 0.0f;
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
         {
             num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)I_rulelist[u_e_index[i]][u_de_index[j]];
-            den += u_e[u_e_index[i]] * u_de[u_de_index[j]];
         }
     u_u = num / den;
     //pPid->pParaAdr[5] += (short)u_u;
 
     den = 0.0f;
-    num = 0.0f;
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
         {
             num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)D_rulelist[u_e_index[i]][u_de_index[j]];
-            den += u_e[u_e_index[i]] * u_de[u_de_index[j]];
         }
     u_u = num / den;
     pPid->pParaAdr[6] += (short)u_u*10;
