@@ -508,7 +508,7 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
     for (; j < 3; j++)
         u_e_index[j] = 0;
 
-    dcurDelta = pPid->sDeltaL1 - pPid->sDeltaL2;
+    dcurDelta = pPid->sDeltaL2 - pPid->sDeltaL1;
 
     if (dcurDelta <= -wReg[165])
         dcurDelta = -wReg[165] + 1;
@@ -542,7 +542,7 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
     if ( pPid->pParaAdr[4] < 50 )
         pPid->pParaAdr[4] = 50 ;
 
-    den = 0.0f;
+    num = 0.0f;
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
         {
@@ -551,7 +551,7 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
     u_u = num / den;
     //pPid->pParaAdr[5] += (short)u_u;
 
-    den = 0.0f;
+    num = 0.0f;
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
         {
