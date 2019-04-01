@@ -261,7 +261,7 @@ short PID_controller(PID_Module *pPid)
 
     //缩放到-130 - 130范围内
     pid_u = tmp / 10000;
-    /*
+    
     //出现正偏差,且发生负输出时，输出为正回推进力
     if (curDelta > 0 && pid_u < 0)
         pid_u = wReg[164];
@@ -273,7 +273,7 @@ short PID_controller(PID_Module *pPid)
     //在小偏差范围内，关断输出
     if (curDelta < wReg[163] && curDelta > -wReg[163])
         pid_u = 0;
-*/
+
     return pid_u;
 }
 
