@@ -558,7 +558,9 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
             num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)D_rulelist[u_e_index[i]][u_de_index[j]];
         }
     u_u = num / den;
-    pPid->pParaAdr[6] += (short)u_u*10;
+    pPid->pParaAdr[6] += (short)u_u*15;
+    if ( pPid->pParaAdr[6] < 0)
+        pPid->pParaAdr[6] = 0 ;
 }
 
 /*------------------end of file------------------------*/
