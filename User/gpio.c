@@ -9,7 +9,7 @@ void GPIO_Config(void)
 {		
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE) ;
+	LED1_CLK(LED1_PORT, ENABLE) ;
 
 	//----------------control input singal----------------------------------------------
 	GPIO_InitStructure.GPIO_Pin = LED1_PIN ;

@@ -200,14 +200,14 @@ void Thruster_step(PID_Module *pPid)
     if (pPid->pParaAdr[9] == 0)
         return;
 
-    if (pPid->pParaAdr[2] == 0)  //PID控制
+    if (pPid->pParaAdr[2] == 0) //PID控制
         force = PID_controller(pPid);
 
-    if (pPid->pParaAdr[2] == 1)  //模糊控制
+    if (pPid->pParaAdr[2] == 1) //模糊控制
         force = Fuzzy_controller(pPid);
 
     if (pPid->pParaAdr[2] == 2) //误差小于100采用PID控制，反之采用模糊控制
-        if (pPid->sDeltaL1 < 100 && pPid->sDeltaL1 > -100)
+        if (pPid->sDeltaL1 < 300 && pPid->sDeltaL1 > -300)
             force = PID_controller(pPid);
         else
             force = Fuzzy_controller(pPid);
@@ -245,7 +245,6 @@ short PID_controller(PID_Module *pPid)
 
     pid_out = pPid->vOutL1;
     pid_out += pid_u;
-
     //输出值限幅，避免调节器饱和
     //输出的最大推进力为130kgf
     if (pid_out > 1300000)
@@ -253,27 +252,33 @@ short PID_controller(PID_Module *pPid)
     if (pid_out < -1300000)
         pid_out = -1300000;
 
-    pPid->vOutL2 = pPid->vOutL1;
-    pPid->vOutL1 = pid_out;
-
     //输出限幅
     tmp = pid_out * pPid->pParaAdr[7] / 100;
 
     //缩放到-130 - 130范围内
     pid_u = tmp / 10000;
-    /*
+
     //出现正偏差,且发生负输出时，输出为正回推进力
     if (curDelta > 0 && pid_u < 0)
+    {
         pid_u = wReg[164];
+        pid_out = 0;
+    }
 
     //出现负偏差,且发生正输出时，输出为负回正推进力
     if (curDelta < 0 && pid_u > 0)
+    {
         pid_u = -wReg[164];
+        pid_out = 0;
+    }
 
     //在小偏差范围内，关断输出
     if (curDelta < wReg[163] && curDelta > -wReg[163])
         pid_u = 0;
-*/
+
+    pPid->vOutL2 = pPid->vOutL1;
+    pPid->vOutL1 = pid_out;
+
     return pid_u;
 }
 
@@ -448,29 +453,30 @@ void Thruster_out(PID_Module *pPid, short force)
 
 //---------根据模糊规则修正PID参数----------------------------
 int P_rulelist[7][7] = {
-    {3, 3, 2, 2, 1, 0, 0},
-    {3, 3, 2, 2, 1, 0, -1},
-    {2, 2, 2, 1, 0, -1, -1},
-    {2, 2, 1, 0, -1, -2, -2},
-    {1, 1, 0, -1, -1, -2, -2},
-    {1, 0, -1, -2, -2, -2, -3},
-    {0, 0, -2, -2, -2, -3, -3}};
+    {PB, PB, PM, PM, PS, ZO, ZO},
+    {PB, PB, PM, PS, PS, ZO, ZO},
+    {PM, PM, PM, PS, ZO, NS, NS},
+    {PM, PM, PS, ZO, NS, NM, NM},
+    {PS, PS, ZO, NS, NS, NM, NM},
+    {PS, ZO, NS, NM, NM, NM, NB},
+    {ZO, ZO, NM, NM, NM, NB, NB}};
 int I_rulelist[7][7] = {
-    {-3, -3, -2, -2, -1, 0, 0},
-    {-3, -3, -2, -1, -1, 0, 0},
-    {-3, -2, -1, -1, 0, 1, 1},
-    {-2, -2, -1, 0, 1, 2, 2},
-    {-2, -1, 0, 1, 1, 2, 3},
-    {0, 0, 1, 1, 2, 3, 3},
-    {0, 0, 1, 2, 2, 3, 3}};
+    {PS, NS, NB, NB, NB, NM, PS},
+    {PS, NS, NB, NM, NM, NS, ZO},
+    {ZO, NS, NM, NM, NS, NS, ZO},
+    {ZO, NS, NS, NS, NS, NS, ZO},
+    {ZO, ZO, ZO, ZO, ZO, ZO, ZO},
+    {PB, NS, PS, PS, PS, PS, PB},
+    {PB, PM, PM, PM, PS, PS, PB}};
 int D_rulelist[7][7] = {
-    {1, -1, -3, -3, -3, -2, 1},
-    {1, -1, -3, -2, -2, -1, 0},
-    {0, -1, -2, -2, -1, -1, 0},
-    {0, -1, -1, -1, -1, -1, 0},
-    {0, 0, 0, 0, 0, 0, 0},
-    {1, -1, -1, 1, 1, 1, 1},
-    {1, 2, 1, 2, 1, 1, 1}};
+    {NB, NB, NM, NM, NS, ZO, ZO},
+    {NB, NB, NM, NS, NS, ZO, ZO},
+    {NB, NM, NS, NS, ZO, PS, PS},
+    {NM, NM, NS, ZO, PS, PM, PM},
+    {NM, NS, ZO, PS, PS, PM, PB},
+    {ZO, ZO, PS, PS, PM, PB, PB},
+    {ZO, ZO, PS, PM, PM, PB, PB}};
+
 void Fuzzy_PIDParameter_step(PID_Module *pPid)
 {
     float u_e[7];  //误差隶属度
@@ -539,8 +545,8 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
         }
     u_u = num / den;
     pPid->pParaAdr[4] += (short)u_u * 5;
-    if ( pPid->pParaAdr[4] < 50 )
-        pPid->pParaAdr[4] = 50 ;
+    if (pPid->pParaAdr[4] < 50)
+        pPid->pParaAdr[4] = 50;
 
     num = 0.0f;
     for (i = 0; i < 3; i++)
@@ -549,7 +555,7 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
             num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)I_rulelist[u_e_index[i]][u_de_index[j]];
         }
     u_u = num / den;
-    //pPid->pParaAdr[5] += (short)u_u;
+    pPid->pParaAdr[5] += (short)u_u;
 
     num = 0.0f;
     for (i = 0; i < 3; i++)
@@ -558,7 +564,7 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
             num += u_e[u_e_index[i]] * u_de[u_de_index[j]] * (float)D_rulelist[u_e_index[i]][u_de_index[j]];
         }
     u_u = num / den;
-    pPid->pParaAdr[6] += (short)u_u*10;
+    pPid->pParaAdr[6] += (short)u_u * 5;
 }
 
 /*------------------end of file------------------------*/

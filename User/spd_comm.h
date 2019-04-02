@@ -5,7 +5,15 @@
 
 #define SPD1_QUEUE_LEN 10
 #define PID_MAX_OUT 0x01F40000
-#define PID_ZERO_ZONE 160 //零区域电压设置，应该设置为0x50死区电压设置，
+#define PID_ZERO_ZONE 160 //零区域电压设置，应该设置为0x50死区电压设置
+
+#define NB -3
+#define NM -2
+#define NS -1
+#define ZO 0
+#define PS 1
+#define PM 2
+#define PB 3
 
 //速度計算值隊列
 typedef struct _tag_speed_queue
