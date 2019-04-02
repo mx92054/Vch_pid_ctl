@@ -2160,13 +2160,13 @@ Image Symbol Table
     i._sputc                                 0x08003494   Section        0  printf1.o(i._sputc)
     _sputc                                   0x08003495   Thumb Code    10  printf1.o(i._sputc)
     i.main                                   0x080034a0   Section        0  main.o(i.main)
-    i.map_angle2resistance                   0x080037c8   Section        0  plant.o(i.map_angle2resistance)
-    i.plant_init                             0x0800389c   Section        0  plant.o(i.plant_init)
-    i.plant_step                             0x080038d0   Section        0  plant.o(i.plant_step)
-    i.plant_water_set                        0x08003958   Section        0  plant.o(i.plant_water_set)
-    .constdata                               0x0800396c   Section      512  modbus_svr.o(.constdata)
-    wCRCTable                                0x0800396c   Data         512  modbus_svr.o(.constdata)
-    .constdata                               0x08003b6c   Section       64  ctype_c.o(.constdata)
+    i.map_angle2resistance                   0x080037fc   Section        0  plant.o(i.map_angle2resistance)
+    i.plant_init                             0x080038d0   Section        0  plant.o(i.plant_init)
+    i.plant_step                             0x08003904   Section        0  plant.o(i.plant_step)
+    i.plant_water_set                        0x0800398c   Section        0  plant.o(i.plant_water_set)
+    .constdata                               0x080039a0   Section      512  modbus_svr.o(.constdata)
+    wCRCTable                                0x080039a0   Data         512  modbus_svr.o(.constdata)
+    .constdata                               0x08003ba0   Section       64  ctype_c.o(.constdata)
     .data                                    0x20000000   Section       20  system_stm32f4xx.o(.data)
     .data                                    0x20000014   Section       16  stm32f4xx_rcc.o(.data)
     APBAHBPrescTable                         0x20000014   Data          16  stm32f4xx_rcc.o(.data)
@@ -2477,14 +2477,14 @@ Image Symbol Table
     __scatterload_null                       0x08003323   Thumb Code     2  handlers.o(i.__scatterload_null)
     __scatterload_zeroinit                   0x08003325   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
     _is_digit                                0x08003333   Thumb Code    14  scanf_fp.o(i._is_digit)
-    main                                     0x080034a1   Thumb Code   768  main.o(i.main)
-    map_angle2resistance                     0x080037c9   Thumb Code   190  plant.o(i.map_angle2resistance)
-    plant_init                               0x0800389d   Thumb Code    38  plant.o(i.plant_init)
-    plant_step                               0x080038d1   Thumb Code   126  plant.o(i.plant_step)
-    plant_water_set                          0x08003959   Thumb Code    20  plant.o(i.plant_water_set)
-    __ctype_categories                       0x08003b6c   Data          64  ctype_c.o(.constdata)
-    Region$$Table$$Base                      0x08003bac   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08003bcc   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x080034a1   Thumb Code   814  main.o(i.main)
+    map_angle2resistance                     0x080037fd   Thumb Code   190  plant.o(i.map_angle2resistance)
+    plant_init                               0x080038d1   Thumb Code    38  plant.o(i.plant_init)
+    plant_step                               0x08003905   Thumb Code   126  plant.o(i.plant_step)
+    plant_water_set                          0x0800398d   Thumb Code    20  plant.o(i.plant_water_set)
+    __ctype_categories                       0x08003ba0   Data          64  ctype_c.o(.constdata)
+    Region$$Table$$Base                      0x08003be0   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08003c00   Number         0  anon$$obj.o(Region$$Table)
     SystemCoreClock                          0x20000000   Data           4  system_stm32f4xx.o(.data)
     AHBPrescTable                            0x20000004   Data          16  system_stm32f4xx.o(.data)
     bSaved                                   0x20000024   Data           1  modbus_svr.o(.data)
@@ -2561,9 +2561,9 @@ Memory Map of the image
 
   Image Entry point : 0x080001ad
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00003fe4, Max: 0x00100000, ABSOLUTE, COMPRESSED[0x00003ce4])
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00004018, Max: 0x00100000, ABSOLUTE, COMPRESSED[0x00003d18])
 
-    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x00003bcc, Max: 0x00100000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x00003c00, Max: 0x00100000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -2722,14 +2722,14 @@ Memory Map of the image
     0x08003340   0x00000154   Code   RO         6180    i._printf_core      mc_w.l(printf1.o)
     0x08003494   0x0000000a   Code   RO         6182    i._sputc            mc_w.l(printf1.o)
     0x0800349e   0x00000002   PAD
-    0x080034a0   0x00000328   Code   RO         5161    i.main              main.o
-    0x080037c8   0x000000d4   Code   RO         6065    i.map_angle2resistance  plant.o
-    0x0800389c   0x00000034   Code   RO         6066    i.plant_init        plant.o
-    0x080038d0   0x00000088   Code   RO         6067    i.plant_step        plant.o
-    0x08003958   0x00000014   Code   RO         6068    i.plant_water_set   plant.o
-    0x0800396c   0x00000200   Data   RO         5356    .constdata          modbus_svr.o
-    0x08003b6c   0x00000040   Data   RO         6516    .constdata          mc_w.l(ctype_c.o)
-    0x08003bac   0x00000020   Data   RO         6518    Region$$Table       anon$$obj.o
+    0x080034a0   0x0000035c   Code   RO         5161    i.main              main.o
+    0x080037fc   0x000000d4   Code   RO         6065    i.map_angle2resistance  plant.o
+    0x080038d0   0x00000034   Code   RO         6066    i.plant_init        plant.o
+    0x08003904   0x00000088   Code   RO         6067    i.plant_step        plant.o
+    0x0800398c   0x00000014   Code   RO         6068    i.plant_water_set   plant.o
+    0x080039a0   0x00000200   Data   RO         5356    .constdata          modbus_svr.o
+    0x08003ba0   0x00000040   Data   RO         6516    .constdata          mc_w.l(ctype_c.o)
+    0x08003be0   0x00000020   Data   RO         6518    Region$$Table       anon$$obj.o
 
 
     Execution Region RW_IRAM1 (Base: 0x20000000, Size: 0x00001378, Max: 0x00030000, ABSOLUTE, COMPRESSED[0x00000118])
@@ -2770,7 +2770,7 @@ Image component sizes
 
        312         42          0          0          0       2689   bsp_innerflash.o
        136         12          0          0          0       1495   gpio.o
-       808         40          0          0         72       2843   main.o
+       860         46          0          0         72       2903   main.o
        124         16          0          0          0       1795   misc.o
       1450        126        512         16       1312      10223   modbus_svr.o
        420         46          0        100         40       3769   plant.o
@@ -2791,7 +2791,7 @@ Image component sizes
        728         70          0         16        308       4533   usart_spd3.o
 
     ----------------------------------------------------------------------
-     10838        938        972       1048       3936     398901   Object Totals
+     10890        944        972       1048       3936     398961   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         18          0          0          3          2          0   (incl. Padding)
 
@@ -2852,15 +2852,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     14272       1002       1036       1048       3936     390477   Grand Totals
-     14272       1002       1036        280       3936     390477   ELF Image Totals (compressed)
-     14272       1002       1036        280          0          0   ROM Totals
+     14324       1008       1036       1048       3936     390537   Grand Totals
+     14324       1008       1036        280       3936     390537   ELF Image Totals (compressed)
+     14324       1008       1036        280          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                15308 (  14.95kB)
+    Total RO  Size (Code + RO Data)                15360 (  15.00kB)
     Total RW  Size (RW Data + ZI Data)              4984 (   4.87kB)
-    Total ROM Size (Code + RO Data + RW Data)      15588 (  15.22kB)
+    Total ROM Size (Code + RO Data + RW Data)      15640 (  15.27kB)
 
 ==============================================================================
 
