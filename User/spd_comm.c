@@ -262,14 +262,14 @@ short PID_controller(PID_Module *pPid)
     if (curDelta > 0 && pid_u < 0)
     {
         pid_u = wReg[164];
-        pid_out = 0;
+        //pid_out = wReg[164] * 10000;
     }
 
     //出现负偏差,且发生正输出时，输出为负回正推进力
     if (curDelta < 0 && pid_u > 0)
     {
         pid_u = -wReg[164];
-        pid_out = 0;
+        //pid_out = -wReg[164] * 10000;
     }
 
     //在小偏差范围内，关断输出
@@ -545,8 +545,10 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
         }
     u_u = num / den;
     pPid->pParaAdr[4] += (short)u_u * 5;
-    if (pPid->pParaAdr[4] < 50)
-        pPid->pParaAdr[4] = 50;
+    if (pPid->pParaAdr[4] < 100)
+        pPid->pParaAdr[4] = 100;
+    if (pPid->pParaAdr[4] > 2000)
+        pPid->pParaAdr[4] = 2000;
 
     num = 0.0f;
     for (i = 0; i < 3; i++)
@@ -556,6 +558,10 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
         }
     u_u = num / den;
     pPid->pParaAdr[5] += (short)u_u;
+    if (pPid->pParaAdr[5] < 1)
+        pPid->pParaAdr[5] = 1;
+    if (pPid->pParaAdr[5] > 20)
+        pPid->pParaAdr[5] = 20;
 
     num = 0.0f;
     for (i = 0; i < 3; i++)
@@ -565,6 +571,10 @@ void Fuzzy_PIDParameter_step(PID_Module *pPid)
         }
     u_u = num / den;
     pPid->pParaAdr[6] += (short)u_u * 5;
+    if (pPid->pParaAdr[6] < 1000)
+        pPid->pParaAdr[6] = 1000;
+    if (pPid->pParaAdr[6] > 10000)
+        pPid->pParaAdr[6] = 10000;
 }
 
 /*------------------end of file------------------------*/
