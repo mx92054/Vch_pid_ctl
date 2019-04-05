@@ -89,7 +89,7 @@ int main(void)
 	wReg[147] = 100;
 	wReg[148] = 1;
 
-	wReg[150] = 50; //126;
+	wReg[150] = 126;
 	wReg[151] = 121;
 	wReg[152] = 1;
 	wReg[154] = 800;
@@ -114,8 +114,8 @@ int main(void)
 	PIDMod_initialize(&pid2, 140);
 	PIDMod_initialize(&pid3, 150);
 
-	plant_init(&plant);
-	plant_water_set(&plant, 1.0f, 0);
+	//plant_init(&plant);
+	//plant_water_set(&plant, 1.0f, 0);
 
 	//bp_plant_init(&pt);
 
@@ -151,9 +151,9 @@ int main(void)
 			PIDMod_step(&pid2);
 			Thruster_step(&pid3);
 
-			plant_step(&plant, wReg[161] * 10);
-			wReg[50] = (int)(plant.angle * 1800.0f / 3.14f);
-			wReg[51] = (int)(plant.dangle * 1800.0f / 3.14f);
+			//plant_step(&plant, wReg[161] * 10);
+			//wReg[50] = (int)(plant.angle * 1800.0f / 3.14f);
+			//wReg[51] = (int)(plant.dangle * 1800.0f / 3.14f);
 		}
 
 		if (GetTimer(3)) //100ms cycle
