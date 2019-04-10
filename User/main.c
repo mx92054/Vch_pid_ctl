@@ -64,9 +64,9 @@ int main(void)
 	wReg[122] = 0x8000;
 	wReg[123] = 0x8000;
 
-	wReg[127] = 1 ;
-	wReg[128] = 5 ;
-	wReg[129] = 0 ;
+	wReg[127] = 1;
+	wReg[128] = 5;
+	wReg[129] = 0;
 
 	wReg[124] = 2;
 	wReg[125] = 153;
@@ -172,10 +172,10 @@ int main(void)
 			{
 				if (wReg[127] > 0 && wReg[127] < 5 && nTestMode == 0) //Æô¶¯²âÊÔ
 				{
-					if ( wReg[128] < -10)
-						wReg[128] = -10 ;
-					if ( wReg[128] > 10)
-						wReg[128] = 10 ;
+					if (wReg[128] < -10)
+						wReg[128] = -10;
+					if (wReg[128] > 10)
+						wReg[128] = 10;
 					nTestMode = 1; //ÉÏÉý
 					nTestVol = (wReg[128] > 0) ? (3270 * wReg[128]) : (-3270 * wReg[128]);
 					nTestCur = 0;
@@ -189,6 +189,14 @@ int main(void)
 					{
 						nTestMode = 2;
 						nTestCur = 0;
+					}
+
+					if ((wReg[127] == 0 && (wReg[37] > 5 || wReg[37] < -5)) ||
+						(wReg[127] == 1 && (wReg[27] > 5 || wReg[27] < -5)) ||
+						(wReg[127] == 2 && (wReg[17] > 5 || wReg[17] < -5)))
+					{
+						nTestMode = 0;
+						wReg[129] = 0;
 					}
 				}
 
