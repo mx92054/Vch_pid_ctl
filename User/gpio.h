@@ -4,9 +4,13 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
 
+#define LED1_CLK RCC_AHB1PeriphClockCmd
+#define LED1_PORT RCC_AHB1Periph_GPIOB
 #define LED1_PIN GPIO_Pin_12 // LED1状态指示灯
 #define LED1_GPIO GPIOB
 
+#define LED2_CLK RCC_AHB1PeriphClockCmd
+#define LED2_PORT RCC_AHB1Periph_GPIOB
 #define LED2_PIN GPIO_Pin_13 // LED2运行指示灯
 #define LED2_GPIO GPIOB
 

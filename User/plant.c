@@ -73,7 +73,7 @@ float map_angle2resistance(plant_block *pt)
     offset = cur_angle % 15;
     result = flow_torque_table[index];
     result += (float)offset * (flow_torque_table[index + 1] - flow_torque_table[index]) / 15.0f;
-    result *= pt->water_vs * pt->water_vs / 0.25;
+    result *= pt->water_vs * pt->water_vs / 0.25f;
 
     return result;
 }
