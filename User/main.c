@@ -26,6 +26,8 @@
 #include "spd_comm.h"
 #include "BP_comm.h"
 
+#define ushort unsigned short
+
 extern short wReg[];
 extern u8 bChanged;
 
@@ -41,6 +43,12 @@ int main(void)
 	int nTestVol;	  //最终输出电压数值
 	int nTestCur;	  //当前输出电压值
 	short sTestSw = 0; //上次测试按钮状态
+
+	ushort lastDAVal[4]; //上一次DA输出值
+	ushort currDAVal; //本次DA输出值
+	ushort DAVal[4];	 //本次DA输出值保存
+	int bMaxDAVal[4];	//当前是否是最大输出状态
+	int i, DAChn;
 
 	SysTick_Init();												  //tick定时器初始
 	GPIO_Config();												  //GPIO初始化
@@ -118,6 +126,11 @@ int main(void)
 	//plant_water_set(&plant, 1.0f, 0);
 
 	//bp_plant_init(&pt);
+	for (i = 0; i < 4; i++)
+	{
+		lastDAVal[i] = (ushort)wReg[120 + i];
+		bMaxDAVal[i] = 0;
+	}
 
 	while (1)
 	{
@@ -154,6 +167,39 @@ int main(void)
 			//plant_step(&plant, wReg[161] * 10);
 			//wReg[50] = (int)(plant.angle * 1800.0f / 3.14f);
 			//wReg[51] = (int)(plant.dangle * 1800.0f / 3.14f);
+			//每次模拟量输出值过零时，输出一个最大的值100ms时间
+			for (i = 0; i < 4; i++)
+			{
+				DAChn = 120 + i;
+				currDAVal = (ushort)wReg[DAChn];
+
+				//情形1 当前处于最大或最小输出状态
+				if (bMaxDAVal[i])
+				{
+					bMaxDAVal[i]--;
+					if (bMaxDAVal[i] == 0)
+					{
+						wReg[DAChn] = (short)DAVal[i];
+					}
+				}
+
+				//情形2 输出值从零或负变为正输出
+				if (lastDAVal[i] <= 0x8000 && currDAVal > 0x8000 && !bMaxDAVal[i])
+				{
+					DAVal[i] = (ushort)wReg[DAChn];
+					wReg[DAChn] = 0xFFFF; //真输出最大
+					bMaxDAVal[i] = 2;
+				}
+				//情形3 输出值从零或正变为负输出
+				if (lastDAVal[i] >= 0x8000 && currDAVal < 0x8000 && !bMaxDAVal[i])
+				{
+					DAVal[i] = (ushort)wReg[DAChn];
+					wReg[DAChn] = 0x0000; //真输出最大
+					bMaxDAVal[i] = 2;
+				}
+
+				lastDAVal[i] = (ushort)wReg[DAChn];
+			}
 		}
 
 		if (GetTimer(3)) //100ms cycle

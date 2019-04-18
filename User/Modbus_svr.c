@@ -118,7 +118,6 @@ void Modbus_init(void)
 	tsk_buf = buffer;
 	isr_buf = buffer + 256;
 
-	ADDRESS = 1;
 
 	if (BAUDRATE != 96 && BAUDRATE != 192 && BAUDRATE != 384 && BAUDRATE != 1152)
 	{
@@ -131,6 +130,9 @@ void Modbus_init(void)
 		ADDRESS = 1;
 		bSaved = 1;
 	}
+	
+	ADDRESS = 1;
+	BAUDRATE = 1152;
 
 	MODBUS_NVIC_Configuration();
 	MODBUS_Config(BAUDRATE * 100);
